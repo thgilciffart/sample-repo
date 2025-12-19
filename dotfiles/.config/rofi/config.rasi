@@ -1,0 +1,6 @@
+configuration {
+	font: "SFMono Nerd Font 12";
+	show-hidden: true;
+	show-icons: false;
+	icon-theme: "Papirus"; // Optional: set icon theme
+   }

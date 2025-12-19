@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 FILE.tex"
+  exit 1
+fi
+
+# Compile the LaTeX file
+latex-compile "$1"
+latex-clean -k
+
+# Get the PDF filename (replace .tex with .pdf)
+PDF_FILE="${1%.tex}.pdf"
+
+# Check if PDF was generated
+if [ -f "$PDF_FILE" ]; then
+  echo "PDF generated: $PDF_FILE"
+else
+  echo "Error: PDF file not generated"
+  exit 1
+fi

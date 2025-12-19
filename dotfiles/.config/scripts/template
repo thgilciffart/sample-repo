@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# ================================
+# Configurable template mappings
+# ================================
+declare -A TEMPLATES=(
+  ["potd"]="$HOME/texmf/potd.tex"
+  ["integral"]="$HOME/texmf/integral.tex"
+  ["doc"]="$HOME/texmf/doc.tex"
+)
+
+# ================================
+# Helper functions
+# ================================
+print_usage() {
+  echo "Usage:"
+  echo "  template --TYPE <filename>"
+  echo ""
+  echo "Available types:"
+  for key in "${!TEMPLATES[@]}"; do
+    echo "  --$key   → ${TEMPLATES[$key]}"
+  done
+}
+
+# ================================
+# Fail if no arguments
+# ================================
+if [ $# -lt 2 ]; then
+  print_usage
+  exit 1
+fi
+
+# ================================
+# Parse type flag
+# ================================
+TYPE=""
+FILE=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --*)
+    TYPE="${1#--}"
+    ;;
+  *)
+    FILE="$1"
+    ;;
+  esac
+  shift
+done
+
+# Require explicit type
+if [ -z "$TYPE" ]; then
+  echo "Error: You must choose a template type."
+  print_usage
+  exit 1
+fi
+
+# Validate type
+if [[ -z "${TEMPLATES[$TYPE]}" ]]; then
+  echo "Error: Unknown template type: $TYPE"
+  print_usage
+  exit 1
+fi
+
+# Require filename
+if [ -z "$FILE" ]; then
+  echo "Error: No filename provided."
+  print_usage
+  exit 1
+fi
+
+# ================================
+# Resolve paths
+# ================================
+TEMPLATE_PATH="${TEMPLATES[$TYPE]}"
+
+# Add .tex if missing
+if [[ "$FILE" != *.tex ]]; then
+  FILE="${FILE}.tex"
+fi
+
+# Check template exists
+if [ ! -f "$TEMPLATE_PATH" ]; then
+  echo "Error: Template not found: $TEMPLATE_PATH"
+  exit 1
+fi
+
+# ================================
+# Copy and open (no overwrite)
+# ================================
+if [ -e "$FILE" ]; then
+  echo "Error: '$FILE' already exists. Aborting to avoid overwriting."
+  exit 1
+fi
+
+cp "$TEMPLATE_PATH" "$FILE"
+echo "Created: $FILE from '$TYPE' template"
+nvim "$FILE"

@@ -1,0 +1,14 @@
+zathura
+localsend
+zathura-pdf-mupdf
+zaread-git
+libreoffice-fresh
+obsidian
+neovim
+vim
+zed
+helium-browser-bin
+brave-bin
+ttf-meslo-nerd
+ttf-jetbrains-mono-nerd
+texlab

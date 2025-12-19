@@ -1,0 +1,73 @@
+% Always typeset math in display style
+\everymath{\displaystyle}
+
+% Standard mathematical typesetting packages
+\usepackage[T1]{fontenc}
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage[fixamsmath]{mathtools}  % Extension to amsmath
+\usepackage[cal=cm, scr=rsfs, frak=euler, bb=ams]{mathalpha}
+\usepackage{lmodern}
+\usepackage{cancel}
+\usepackage[nointegrals]{wasysym}
+
+% Extras
+\usepackage{graphicx}
+\usepackage[version=4]{mhchem}
+\usepackage{float}
+\usepackage{markdown}
+\usepackage{cite}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{bigints}
+\usepackage{physics}  % Lots of useful shortcuts and macros
+\usepackage{quiver}  % For drawing commutative diagrams easily
+\usepackage{hwemoji}  % Support Unicode emojis
+\usepackage{subfiles}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{booktabs}
+
+\usepackage[colorlinks=false,hidelinks]{hyperref}
+
+\DeclareUnicodeCharacter{FE0E}{}
+\DeclareUnicodeCharacter{FE0F}{}
+
+\pgfplotsset{compat=newest}
+
+% Common shortcuts
+\DeclareMathOperator{\bRe}{Re}
+\DeclareMathOperator{\bIm}{Im}
+\DeclareMathOperator{\Arg}{Arg}
+
+\DeclareMathOperator{\cosec}{cosec}
+
+\DeclareMathOperator{\arcsinh}{arcsinh}
+\DeclareMathOperator{\arccosh}{arccosh}
+\DeclareMathOperator{\arctanh}{arctanh}
+\DeclareMathOperator{\arccsch}{arccsch}
+\DeclareMathOperator{\arcsech}{arcsech}
+\DeclareMathOperator{\arccoth}{arccoth}
+
+\def\mbb#1{\mathbb{#1}}
+\def\mfk#1{\mathfrak{#1}}
+\def\bN{\mbb{N}}
+\def\bC{\mbb{C}}
+\def\bR{\mbb{R}}
+\def\bQ{\mbb{Q}}
+\def\bZ{\mbb{Z}}
+
+% Sometimes helpful macros
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+
+% Some standard theorem definitions
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Proposition}{Theorem}
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{problem}{Problem}
+
+\theoremstyle{definition}
+\newtheorem{Definition}[Theorem]{Definition}
+
+\renewcommand{\div}{\divisionsymbol}
