@@ -1,1 +1,3 @@
 brightnessctl
+tlp
+powertop

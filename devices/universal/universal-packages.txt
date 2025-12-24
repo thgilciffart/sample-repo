@@ -3,6 +3,8 @@ go
 python
 nodejs
 npm
+github-cli
+tailscale
 syncthing
 tealdeer
 neovim
