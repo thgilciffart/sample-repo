@@ -1,3 +1,4 @@
+ddclient
 docker
 docker-compose
 copyparty
