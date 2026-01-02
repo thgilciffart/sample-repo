@@ -1,0 +1,10 @@
+{
+  "answerclean": "none",
+  "answerdiff": "none",
+  "answeredit": "none",
+  "removemake": "no",
+  "devel": true,
+  "cleanmenu": false,
+  "diffmenu": false,
+  "editmenu": false
+}

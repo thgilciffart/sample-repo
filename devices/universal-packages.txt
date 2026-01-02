@@ -16,6 +16,7 @@ fd
 fzf
 eza
 trash-cli
+mpd
 bat
 openssl
 7zip

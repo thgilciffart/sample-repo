@@ -14,3 +14,22 @@ pkill syncthing
 sed -i 's/127.0.0.1/0.0.0.0/' $HOME/.local/state/syncthing/config.xml
 sudo ufw allow syncthing
 sudo ufw allow syncthing-gui
+
+# Tailscale set up
+sudo systemctl enable tailscaled
+sudo systemctl start tailscaled
+sudo tailscale set --operator=$USER
+
+# Fish set up
+# Set fish as the default shell
+command -v fish | sudo tee -a /etc/shells
+chsh -s "$(command -v fish)"
+# Installing fish plugins
+fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
+fish -c "fisher install jorgebucaran/nvm.fish"
+fish -c "fisher install IlanCosman/tide@v6"
+fish -c "fisher install PatrickF1/fzf.fish"
+fish -c "nvm install latest"
+
+# Add .config to system
+cp -r ./devices/.configa $HOME
