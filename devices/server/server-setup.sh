@@ -2,11 +2,13 @@
 
 # Install server packages
 
-sudo pacman -S --needed - <server-packages.txt
+yay -S --needed - <server-packages.txt
 
 # Docker set up
 sudo groupadd docker
 sudo usermod -aG docker $USER
+sudo systemctl enable --now docker.service
+sudo systemctl enable --now containerd.service
 
 # Karakeep
 
@@ -15,10 +17,21 @@ sudo usermod -aG docker $USER
 # nginx proxy manager
 
 # overleaf
+mkdir $HOME/overleaf
+git clone https://github.com/yu-i-i/overleaf-cep $HOME/overleaf/extended
+git clone https://github.com/overleaf/toolkit $HOME/overleaf/toolkit
+(cd $HOME/overleaf/extended/server-ce && make)
+$HOME/overleaf/toolkit/bin/init
+cat >$HOME/overleaf/toolkit/config/docker-compose.override.yml <<'overleaf-extended'
+---
+services:
+  sharelatex:
+    image: sharelatex/sharelatex-base:ext-ce
+overleaf-extended
 
 # syncthing
 
-# services
-sudo systemctl enable --now ddclient.service
-sudo systemctl enable --now docker.service
-sudo systemctl enable --now containerd.service
+# mpd server
+
+#
+# misc. services

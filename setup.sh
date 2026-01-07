@@ -20,6 +20,9 @@ sudo systemctl enable tailscaled
 sudo systemctl start tailscaled
 sudo tailscale set --operator=$USER
 
+# Allow ssh through the firewall
+sudo ufw allow ssh
+
 # Fish set up
 # Set fish as the default shell
 command -v fish | sudo tee -a /etc/shells
