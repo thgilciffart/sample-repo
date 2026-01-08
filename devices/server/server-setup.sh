@@ -51,12 +51,12 @@ fi
     read -p "Enter the listening URL (default 127.0.0.1): " url_input
     KARAKEEP_URL=${url_input:-127.0.0.1}
 
-        cat > ".env" <<karakeep-env
-    KARAKEEP_VERSION=release
-    NEXTAUTH_SECRET=$KARAKEEP_NEXTAUTH_SECRET
-    MEILI_MASTER_KEY=$KARAKEEP_MEILI_KEY
-    NEXTAUTH_URL=http://$KARAKEEP_URL:$KARAKEEP_PORT
-    karakeep-env
+    cat > ".env" <<-karakeep-env
+        KARAKEEP_VERSION=release
+        NEXTAUTH_SECRET=$KARAKEEP_NEXTAUTH_SECRET
+        MEILI_MASTER_KEY=$KARAKEEP_MEILI_KEY
+        NEXTAUTH_URL=http://$KARAKEEP_URL:$KARAKEEP_PORT
+        karakeep-env
 
     sudo ufw allow $KARAKEEP_PORT/tcp
     echo "This is your NextAuth Secret: "$KARAKEEP_NEXTAUTH_SECRET" Copy it down."
@@ -93,55 +93,56 @@ fi
     read -p "Enter Overleaf site url: " input_url
     OVERLEAF_SITE_URL=${input_url:-localhost://}
 
-        cat >./config/overleaf.rc <<overleaf-config # overleaf.rc config
-    #### Overleaf RC ####
+    cat >./config/overleaf.rc <<-overleaf-config
+        #### Overleaf RC ####
 
-    PROJECT_NAME=$OVERLEAF_PROJECT_NAME
-    OVERLEAF_DATA_PATH=data/overleaf
-    SERVER_PRO=false
-    OVERLEAF_LISTEN_IP=$OVERLEAF_LISTEN_IP
-    OVERLEAF_PORT=$OVERLEAF_PORT
+        PROJECT_NAME=$OVERLEAF_PROJECT_NAME
+        OVERLEAF_DATA_PATH=data/overleaf
+        SERVER_PRO=false
+        OVERLEAF_LISTEN_IP=$OVERLEAF_LISTEN_IP
+        OVERLEAF_PORT=$OVERLEAF_PORT
 
-    SIBLING_CONTAINERS_ENABLED=false
-    DOCKER_SOCKET_PATH=/var/run/docker.sock
+        SIBLING_CONTAINERS_ENABLED=false
+        DOCKER_SOCKET_PATH=/var/run/docker.sock
 
-    MONGO_ENABLED=true
-    MONGO_DATA_PATH=data/mongo
-    MONGO_IMAGE=mongo
-    MONGO_VERSION=8.0
+        MONGO_ENABLED=true
+        MONGO_DATA_PATH=data/mongo
+        MONGO_IMAGE=mongo
+        MONGO_VERSION=8.0
 
-    REDIS_ENABLED=true
-    REDIS_DATA_PATH=data/redis
-    REDIS_IMAGE=redis:7.4
-    REDIS_AOF_PERSISTENCE=true
+        REDIS_ENABLED=true
+        REDIS_DATA_PATH=data/redis
+        REDIS_IMAGE=redis:7.4
+        REDIS_AOF_PERSISTENCE=true
 
-    GIT_BRIDGE_ENABLED=false
+        GIT_BRIDGE_ENABLED=false
 
-    NGINX_ENABLED=false
-    overleaf-config
+        NGINX_ENABLED=false
+        overleaf-config
 
-        cat >./config/variables.env <<variables # variables.env config
-    OVERLEAF_APP_NAME="$OVERLEAF_APP_NAME"
-    OVERLEAF_SITE_URL=$OVERLEAF_SITE_URL
+        cat >./config/variables.env <<-overleaf_variables
+        OVERLEAF_APP_NAME="$OVERLEAF_APP_NAME"
+        OVERLEAF_SITE_URL=$OVERLEAF_SITE_URL
 
-    ENABLED_LINKED_FILE_TYPES=project_file,project_output_file
+        ENABLED_LINKED_FILE_TYPES=project_file,project_output_file
 
-    ENABLE_CONVERSIONS=false
-    EMAIL_CONFIRMATION_DISABLED=true
-    ################
-    ## Server Pro ##
-    ################
+        ENABLE_CONVERSIONS=false
+        EMAIL_CONFIRMATION_DISABLED=true
+        ################
+        ## Server Pro ##
+        ################
 
-    EXTERNAL_AUTH=none
-    variables
-        cat >./config/docker-compose.override.yml <<docker-override # use overleaf extended image
-    ---
-    services:
-      sharelatex:
-        image: overleafcep/sharelatex:6.0.1-ext-v3.3
-    docker-override
+        EXTERNAL_AUTH=none
+        overleaf_variables
+
+    cat >./config/docker-compose.override.yml <<-docker-override
+        ---
+        services:
+            sharelatex:
+                image: overleafcep/sharelatex:6.0.1-ext-v3.3
+        docker-override
     sudo ufw allow $OVERLEAF_PORT/tcp
-    ./bin/up -d
+    bin/up -d
 )
 
 # syncthing
