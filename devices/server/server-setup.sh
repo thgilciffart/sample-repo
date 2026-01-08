@@ -78,7 +78,7 @@ cat >$HOME/overleaf/config/docker-compose.override.yml <<docker-override # use o
 services:
   sharelatex:
     image: overleafcep/sharelatex:6.0.1-ext-v3.3
-  docker-override
+docker-override
 $HOME/overleaf/bin/up -d
 # syncthing
 
