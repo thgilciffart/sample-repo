@@ -11,6 +11,7 @@ sudo systemctl enable --now docker.service
 sudo systemctl enable --now containerd.service
 
 # Karakeep
+sudo mv $HOME/karakeep  $HOME/karakeep-old/# make sure directory is clear
 mkdir -p "$HOME/karakeep"
 (cd "$HOME/karakeep" && wget https://raw.githubusercontent.com/karakeep-app/karakeep/main/docker/docker-compose.yml)
 read -p "Enter NEXTAUTH secret (defaults to random string): " nextauth_string
@@ -23,7 +24,7 @@ read -p "Enter the listening URL (default 127.0.0.1): " url_input
 KARAKEEP_URL=${url_input:-127.0.0.1}
 cat > "$HOME/karakeep/.env" <<karakeep-env
 KARAKEEP_VERSION=release
-NEXTAUTH_SECRET=$NEXTAUTH_SECRET
+NEXTAUTH_SECRET=$KARAKEEP_NEXTAUTH_SECRET
 MEILI_MASTER_KEY=$KARAKEEP_MEILI_KEY
 NEXTAUTH_URL=http://$KARAKEEP_URL:$KARAKEEP_PORT
 karakeep-env
@@ -37,6 +38,7 @@ echo "This is your Meili Master Key: $KARAKEEP_MEILI_KEY, copy it down."
 # nginx proxy manager
 
 # overleaf
+sudo mv $HOME/overleaf $HOME/overleaf-old
 mkdir $HOME/overleaf
 git clone https://github.com/overleaf/toolkit $HOME/overleaf
 $HOME/overleaf/bin/init
@@ -101,6 +103,7 @@ services:
 docker-override
 sudo ufw allow $OVERLEAF_PORT/tcp
 $HOME/overleaf/bin/up -d
+
 # syncthing
 
 # mpd server
