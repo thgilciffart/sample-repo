@@ -20,14 +20,34 @@ sudo systemctl enable --now containerd.service
 mkdir $HOME/overleaf
 git clone https://github.com/overleaf/toolkit $HOME/overleaf
 $HOME/overleaf/bin/init
+
+# asking users to configure
+read -p "Enter Overleaf Project Name (defaults to overleaf-extended): " input_project
+PROJECT_NAME=${input_project:-overleaf-extended}
+read -p "Enter Overleaf App Name (defaults to Overleaf Community Extended): " input_appname
+APP_NAME=${input_appname:-Overleaf Community Extended}
+read -p "Enter Overleaf Port (defaults to 4000): " input_port
+PORT=${input_port:-4000}
+read -p "Expose Overleaf to network? (defaults to no): " expose_choice
+case "${expose_choice:-n}" in
+[yY]*)
+  LISTEN_IP="0.0.0.0"
+  ;;
+*)
+  LISTEN_IP="127.0.0.1"
+  ;;
+esac
+read -p "Enter Overleaf site url: " input_url
+SITE_URL=${input_url:-localhost://}
+
 cat >$HOME/overleaf/config/overleaf.rc <<'overleaf-config' # overleaf.rc config
 #### Overleaf RC ####
 
-PROJECT_NAME=overleaf-extended
+PROJECT_NAME=$PROJECT_NAME
 OVERLEAF_DATA_PATH=data/overleaf
 SERVER_PRO=false
-OVERLEAF_LISTEN_IP=0.0.0.0
-OVERLEAF_PORT=4000
+OVERLEAF_LISTEN_IP=$LISTEN_IP
+OVERLEAF_PORT=$PORT
 
 SIBLING_CONTAINERS_ENABLED=false
 DOCKER_SOCKET_PATH=/var/run/docker.sock
@@ -47,7 +67,8 @@ GIT_BRIDGE_ENABLED=false
 NGINX_ENABLED=false
 overleaf-config
 cat >$HOME/overleaf/config/variables.env <<'variables' # variables.env config
-OVERLEAF_APP_NAME="Overleaf Extended"
+OVERLEAF_APP_NAME="$APP_NAME"
+OVERLEAF_SITE_URL=$SITE_URL
 
 ENABLED_LINKED_FILE_TYPES=project_file,project_output_file
 
