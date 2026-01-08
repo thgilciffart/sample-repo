@@ -13,7 +13,7 @@ sudo systemctl enable --now containerd.service
 # Authentik Set up
 if [ -d "$HOME/authentik" ]; then
     echo "Directory exists. Moving..."
-    mv "$HOME/authentik" "HOME/authentik.old"
+    mv "$HOME/authentik" "$HOME/authentik.old"
 else
     echo "Directory does not exist. Creating..."
     mkdir -p "$HOME/authentik"
@@ -30,7 +30,7 @@ fi
 # Karakeep
 if [ -d "$HOME/karakeep" ]; then
     echo "Directory exists. Moving..."
-    mv "$HOME/karakeep" "HOME/karakeep.old"
+    mv "$HOME/karakeep" "$HOME/karakeep.old"
 else
     echo "Directory does not exist. Creating..."
     mkdir -p "$HOME/karakeep"
@@ -69,13 +69,13 @@ fi
 # overleaf
 if [ -d "$HOME/overleaf" ]; then
     echo "Directory exists. Moving..."
-    mv "$HOME/overleaf" "HOME/overleaf.old"
+    mv "$HOME/overleaf" "$HOME/overleaf.old"
 else
     echo "Directory does not exist. Creating..."
     mkdir -p "$HOME/overleaf"
 fi
-git clone https://github.com/overleaf/toolkit $HOME/overleaf
 (
+    git clone https://github.com/overleaf/toolkit $HOME/overleaf
     cd $HOME/overleaf
     bin/init
     # asking users to configure
