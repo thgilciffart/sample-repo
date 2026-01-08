@@ -38,7 +38,7 @@ cat >$HOME/overleaf/config/overleaf.rc <<overleaf-config # overleaf.rc config
 
 PROJECT_NAME=$PROJECT_NAME
 OVERLEAF_DATA_PATH=data/overleaf
-SERVER_PRO=falseie 
+SERVER_PRO=false
 OVERLEAF_LISTEN_IP=$LISTEN_IP
 OVERLEAF_PORT=$PORT
 
@@ -59,7 +59,7 @@ GIT_BRIDGE_ENABLED=false
 
 NGINX_ENABLED=false
 overleaf-config
-cat >$HOME/overleaf/config/variables.env <<'variables' # variables.env config
+cat >$HOME/overleaf/config/variables.env <<variables # variables.env config
 OVERLEAF_APP_NAME="$APP_NAME"
 OVERLEAF_SITE_URL=$SITE_URL
 
@@ -73,12 +73,12 @@ EMAIL_CONFIRMATION_DISABLED=true
 
 EXTERNAL_AUTH=none
 variables
-cat >$HOME/overleaf/config/docker-compose.override.yml <<'overleaf-extended' # use overleaf extended image
+cat >$HOME/overleaf/config/docker-compose.override.yml <<docker-override # use overleaf extended image
 ---
 services:
   sharelatex:
     image: overleafcep/sharelatex:6.0.1-ext-v3.3
-overleaf-extended
+  docker-override
 $HOME/overleaf/bin/up -d
 # syncthing
 
