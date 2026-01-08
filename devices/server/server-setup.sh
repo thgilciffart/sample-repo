@@ -18,22 +18,54 @@ sudo systemctl enable --now containerd.service
 
 # overleaf
 mkdir $HOME/overleaf
-git clone https://github.com/yu-i-i/overleaf-cep $HOME/overleaf/extended
-git clone https://github.com/overleaf/toolkit $HOME/overleaf/toolkit
-(cd $HOME/overleaf/extended/server-ce && make)
-$HOME/overleaf/toolkit/bin/init
-sed -i 's/OVERLEAF_LISTEN_IP=127.0.0.1/OVERLEAF_LISTEN_IP=0.0.0.0/' $HOME/overleaf/toolkit/config/overleaf.rc
-sed -i 's/PROJECT_NAME=overleaf/PROJECT_NAME=overleaf-extended/' $HOME/overleaf/toolkit/config/overleaf.rc
-sed -i 's/OVERLEAF_PORT=80/OVERLEAF_PORT=4200/' $HOME/overleaf/toolkit/config/overleaf.rc
-sed -i 's/SIBLING_CONTAINERS_ENABLED=true/SIBLING_CONTAINERS_ENABLED=false/' $HOME/overleaf/toolkit/config/overleaf.rc
-sudo ufw allow 4200/tcp
-cat >$HOME/overleaf/toolkit/config/docker-compose.override.yml <<'overleaf-extended'
+git clone https://github.com/overleaf/toolkit $HOME/overleaf
+$HOME/overleaf/bin/init
+cat >$HOME/overleaf/config/overleaf.rc <<'overleaf-config' # overleaf.rc config
+#### Overleaf RC ####
+
+PROJECT_NAME=overleaf-extended
+OVERLEAF_DATA_PATH=data/overleaf
+SERVER_PRO=false
+OVERLEAF_LISTEN_IP=0.0.0.0
+OVERLEAF_PORT=4000
+
+SIBLING_CONTAINERS_ENABLED=false
+DOCKER_SOCKET_PATH=/var/run/docker.sock
+
+MONGO_ENABLED=true
+MONGO_DATA_PATH=data/mongo
+MONGO_IMAGE=mongo
+MONGO_VERSION=8.0
+
+REDIS_ENABLED=true
+REDIS_DATA_PATH=data/redis
+REDIS_IMAGE=redis:7.4
+REDIS_AOF_PERSISTENCE=true
+
+GIT_BRIDGE_ENABLED=false
+
+NGINX_ENABLED=false
+overleaf-config
+cat >$HOME/overleaf/config/variables.env <<'variables' # variables.env config
+OVERLEAF_APP_NAME="Overleaf Extended"
+
+ENABLED_LINKED_FILE_TYPES=project_file,project_output_file
+
+ENABLE_CONVERSIONS=false
+EMAIL_CONFIRMATION_DISABLED=true
+################
+## Server Pro ##
+################
+
+EXTERNAL_AUTH=none
+variables
+cat >$HOME/overleaf/config/docker-compose.override.yml <<'overleaf-extended' # use overleaf extended image
 ---
 services:
   sharelatex:
-    image: sharelatex/sharelatex-base:ext-ce
+    image: overleafcep/sharelatex:6.0.1-ext-v3.3
 overleaf-extended
-$HOME/overleaf/toolkit/bin/up
+$HOME/overleaf/bin/up -d
 # syncthing
 
 # mpd server
