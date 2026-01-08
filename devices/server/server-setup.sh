@@ -37,6 +37,7 @@ else
     echo "Directory does not exist. Creating..."
     mkdir -p "$HOME/karakeep"
 fi
+
 (
     cd $HOME/karakeep
     wget https://raw.githubusercontent.com/karakeep-app/karakeep/main/docker/docker-compose.yml
@@ -50,7 +51,7 @@ fi
     read -p "Enter the listening URL (default 127.0.0.1): " url_input
     KARAKEEP_URL=${url_input:-127.0.0.1}
 
-    cat > ".env" <<karakeep-env
+        cat > ".env" <<karakeep-env
     KARAKEEP_VERSION=release
     NEXTAUTH_SECRET=$KARAKEEP_NEXTAUTH_SECRET
     MEILI_MASTER_KEY=$KARAKEEP_MEILI_KEY
@@ -91,7 +92,8 @@ fi
     OVERLEAF_LISTEN_IP=${input_listening_ip:-127.0.0.1}
     read -p "Enter Overleaf site url: " input_url
     OVERLEAF_SITE_URL=${input_url:-localhost://}
-    cat >./config/overleaf.rc <<overleaf-config # overleaf.rc config
+
+        cat >./config/overleaf.rc <<overleaf-config # overleaf.rc config
     #### Overleaf RC ####
 
     PROJECT_NAME=$OVERLEAF_PROJECT_NAME
@@ -117,7 +119,8 @@ fi
 
     NGINX_ENABLED=false
     overleaf-config
-    cat >./config/variables.env <<variables # variables.env config
+
+        cat >./config/variables.env <<variables # variables.env config
     OVERLEAF_APP_NAME="$OVERLEAF_APP_NAME"
     OVERLEAF_SITE_URL=$OVERLEAF_SITE_URL
 
@@ -131,7 +134,7 @@ fi
 
     EXTERNAL_AUTH=none
     variables
-    cat >./config/docker-compose.override.yml <<docker-override # use overleaf extended image
+        cat >./config/docker-compose.override.yml <<docker-override # use overleaf extended image
     ---
     services:
       sharelatex:
