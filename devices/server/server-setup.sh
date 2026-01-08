@@ -2,7 +2,7 @@
 
 # Install server packages
 
-yay -S --needed - <server-packages.txt
+yay -S --needed - <./server-packages.txt
 
 # Docker set up
 sudo groupadd docker
