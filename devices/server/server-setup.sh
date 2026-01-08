@@ -33,12 +33,12 @@ LISTEN_IP=${input_listening_ip:-127.0.0.1}
 read -p "Enter Overleaf site url: " input_url
 SITE_URL=${input_url:-localhost://}
 
-cat >$HOME/overleaf/config/overleaf.rc <<'overleaf-config' # overleaf.rc config
+cat >$HOME/overleaf/config/overleaf.rc <<overleaf-config # overleaf.rc config
 #### Overleaf RC ####
 
 PROJECT_NAME=$PROJECT_NAME
 OVERLEAF_DATA_PATH=data/overleaf
-SERVER_PRO=false
+SERVER_PRO=falseie 
 OVERLEAF_LISTEN_IP=$LISTEN_IP
 OVERLEAF_PORT=$PORT
 
