@@ -2,13 +2,11 @@ rust
 go
 python
 nodejs
-npm
 github-cli
 tailscale
 syncthing
 tealdeer
 neovim
-vim
 fish
 fish-done
 openssh
@@ -18,7 +16,5 @@ eza
 trash-cli
 mpd
 bat
-openssl
 7zip
 zoxide
-

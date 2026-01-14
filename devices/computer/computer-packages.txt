@@ -1,3 +1,7 @@
+autorandr
+tlp
+powertop
+brightnessctl
 vesktop
 mpv
 rmpc
@@ -5,7 +9,6 @@ mpc
 mpd-mpris
 mpdscribble
 nomacs
-font-manager
 nwg-look
 redshift
 proton-pass-bin

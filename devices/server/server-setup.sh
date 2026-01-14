@@ -10,6 +10,10 @@ sudo usermod -aG docker $USER
 sudo systemctl enable --now docker.service
 sudo systemctl enable --now containerd.service
 
+# Cloudflare tunnels
+
+# Tailscale
+
 # Authentik Set up
 if [ -d "$HOME/authentik" ]; then
     echo "Directory exists. Moving..."
@@ -67,6 +71,7 @@ karakeep-env
 # Copyparty
 
 # nginx proxy manager
+
 
 # overleaf
 if [ -d "$HOME/overleaf" ]; then
@@ -146,5 +151,26 @@ docker-override
 
 # mpd server
 
-#
+# vert.sh
+git clone https://github.com/VERT-sh/VERT $HOME/vert.sh
+(
+    cd $HOME/vert.sh
+    docker build -t vert-sh/vert
+        --build-arg PUB_ENV=production \
+        --build-arg PUB_HOSTNAME=vert.sh \
+        --build-arg PUB_PLAUSIBLE_URL=https://plausible.example.com \
+        --build-arg PUB_VERTD_URL=https://vertd.vert.sh \
+        --build-arg PUB_DONATION_URL=https://donations.vert.sh \
+    	--build-arg PUB_DISABLE_ALL_EXTERNAL_REQUESTS=false \
+        --build-arg PUB_STRIPE_KEY="" .
+        docker run -d \
+            --restart unless-stopped \
+            -p 3000:80 \
+            --name "vert" \
+            vert-sh/vert
+
+)
+# stirling pdf
+
+
 # misc. services
