@@ -1,15 +1,18 @@
 #!/bin/bash
 # Install server packages
-
+echo "Installing system packages"
 yay -S --needed $(< server-pkglist.txt)
+loginctl enable-linger $USER
 
 # Docker set up
+echo "Setting up docker"
 sudo groupadd -f docker
 sudo usermod -aG docker $USER
 sudo systemctl enable --now docker.service
 sudo systemctl enable --now containerd.service
 
 ## ddclient
+echo "Setting up ddclient"
 sudo mkdir -p /etc/ddclient
 cat <<ddclient-config | sudo tee /etc/ddclient/ddclient.conf > /dev/null
 daemon=300                      # check every 300 seconds
@@ -36,6 +39,7 @@ ddclient-config
 sudo systemctl enable --now ddclient.service
 
 # nginx proxy manager
+echo "Setting up nginx proxy manager"
 if [ -d "$HOME/nginx-proxy-manager" ]; then
     echo "Directory exists. Moving..."
     mv "$HOME/nginx-proxy-manager" "$HOME/nginx-proxy-manager.old"
@@ -90,7 +94,7 @@ fi
 (
     cd $HOME/karakeep
     wget https://raw.githubusercontent.com/karakeep-app/karakeep/main/docker/docker-compose.yml
-
+    echo "Karakeep setup"
     read -p "Enter NEXTAUTH secret (defaults to random string): " nextauth_string_input
     KARAKEEP_NEXTAUTH_SECRET=${nextauth_string_input:-$(openssl rand -base64 36)}
     read -p "Enter Meili key (defaults to random string): " meilikey_string_input
@@ -114,6 +118,7 @@ karakeep-env
 
 # Copyparty
 mkdir -p $HOME/.config/copyparty
+echo "Copyparty setup"
 read -p "Enter the port to listen on (default 2000): " copyparty_port_input
 COPYPARTY_PORT=${copyparty_port_input:-2000}
 read -p "Enter admin account password " copyparty_admin_pass
@@ -160,7 +165,7 @@ cat > $HOME/.config/copyparty/copyparty.conf <<copyparty-config
         rwmd: user, admin
         a: admin
 copyparty-config
-sudo systemctl enable --now copyparty.service
+sudo systemctl enable --now copyparty@$USER.service
 sudo mkdir -p /etc/copyparty
 sudo cp $HOME/.config/copyparty/copyparty.conf /etc/copyparty/copyparty.conf
 sudo ufw allow $COPYPARTY_PORT
