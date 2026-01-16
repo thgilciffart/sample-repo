@@ -295,8 +295,8 @@ stirling-pdf
 
 # mpd server
 mkdir -p $HOME/.config/mpd
-mkdir -p $HOME/hdd/music
-mkdir -p $HOME/hdd/mpd
+mkdir -p /hdd/music
+mkdir -p /hdd/mpd
 read -p "Enter the port to listen on (default 6000): " mpd_port_input
 MPD_PORT=${mpd_port_input:-6000}
 read -p "Enter the IP to listen on (default 0.0.0.0): " mpd_ip_input
