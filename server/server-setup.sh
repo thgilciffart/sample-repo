@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install server packages
 
-yay -S --needed - <./server-packages.txt
+yay -S --needed $(< server-pkglist.txt)
 
 # Docker set up
 sudo groupadd -f docker

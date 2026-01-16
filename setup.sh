@@ -1,12 +1,12 @@
 #!/bin/sh
 # Install yay package maanger on all systems
 sudo pacman -S --needed git base-devel
-git clone https://aur.archlinux.org/yay.git
-cd yay
+git clone https://aur.archlinux.org/yay.git /tmp/yay
+cd /tmp/yay
 makepkg -si
 
 # Install universal packages
-yay -S --needed - <./packages.txt
+yay -S --needed $(< pkglist.txt)
 
 # Syncthing configuration
 # Load up default syncthing configuration
