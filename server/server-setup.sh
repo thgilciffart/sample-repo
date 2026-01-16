@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 # Install server packages
 
 yay -S --needed - <./server-packages.txt
@@ -9,8 +8,10 @@ sudo groupadd -f docker
 sudo usermod -aG docker $USER
 sudo systemctl enable --now docker.service
 sudo systemctl enable --now containerd.service
+sudo newgrp
 
 ## ddclient
+sudo mkdir -p /etc/ddclient
 cat <<ddclient-config | sudo tee /etc/ddclient/ddclient.conf > /dev/null
 daemon=300                      # check every 300 seconds
 syslog=yes                      # log update msgs to syslog
@@ -33,7 +34,6 @@ ttl=1,
 password='CLOUDFLARE TOKEN'
 SUBDOMAIN.DOMAIN_1.COM
 ddclient-config
-echo "Make sure to manually configure /etc/ddclient/ddclient.conf"
 sudo systemctl enable --now ddclient.service
 
 # nginx proxy manager
@@ -72,6 +72,7 @@ services:
             - ./data:/data
             - ./letsencrypt:/etc/letsencrypt
 nginx-config
+    docker compose up -d
     sudo ufw allow $NGINX_UI_PORT
     sudo ufw allow 443/tcp
     sudo ufw allow 80/tcp
@@ -161,6 +162,7 @@ cat > $HOME/.config/copyparty/copyparty.conf <<copyparty-config
         a: admin
 copyparty-config
 sudo systemctl enable --now copyparty.service
+sudo mkdir -p /etc/copyparty
 sudo cp $HOME/.config/copyparty/copyparty.conf /etc/copyparty/copyparty.conf
 sudo ufw allow $COPYPARTY_PORT
 
@@ -266,13 +268,13 @@ fi
         vert-sh/vert
 )
 # stirling pdf
-if [ -d "$HOME/sterling-pdf" ]; then
+if [ -d "$HOME/stirling-pdf" ]; then
     echo "Directory exists. Moving..."
-    mv "$HOME/sterling-pdf" "$HOME/sterling-pdf.old"
-    mkdir -p $HOME/sterling-pdf
+    mv "$HOME/stirling-pdf" "$HOME/stirling-pdf.old"
+    mkdir -p $HOME/stirling-pdf
 else
     echo "Directory does not exist. Creating..."
-    mkdir -p $HOME/sterling-pdf
+    mkdir -p $HOME/stirling-pdf
 fi
 (
     cd $HOME/stirling-pdf
@@ -289,6 +291,7 @@ services:
             - ./stirling-data:/configs
         restart: unless-stopped
 stirling-pdf
+    docker compose up -d
 )
 
 # mpd server
@@ -321,3 +324,5 @@ mpd-config
 sudo ufw allow $MPD_PORT
 sudo cp $HOME/.config/mpd/mpd.conf /etc/mpd.conf
 sudo systemctl enable --now mpd.service
+
+echo "Make sure to manually configure /etc/ddclient/ddclient.conf"
