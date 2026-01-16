@@ -101,9 +101,7 @@ fi
     KARAKEEP_MEILI_KEY=${meilikey_string_input:-$(openssl rand -base64 36)}
     read -p "Enter the port to listen on (default 1000): " karakeep_port_input
     KARAKEEP_PORT=${karakeep_port_input:-1000}
-    read -p "Enter the listening URL (default 0.0.0.0): " karakeep_url_input
-    KARAKEEP_URL=${karakeep_url_input:-0.0.0.0}
-
+    sed -i "s/3000:3000/$KARAKEEP_PORT:3000/" docker-compose.yml
     cat > ".env" <<karakeep-env
 KARAKEEP_VERSION=release
 NEXTAUTH_SECRET=$KARAKEEP_NEXTAUTH_SECRET
@@ -121,13 +119,18 @@ mkdir -p $HOME/.config/copyparty
 echo "Copyparty setup"
 read -p "Enter the port to listen on (default 2000): " copyparty_port_input
 COPYPARTY_PORT=${copyparty_port_input:-2000}
-read -p "Enter admin account password " copyparty_admin_pass
+read -p "Enter admin account password: " copyparty_admin_pass
 COPYPARTY_PASSWORD_ADMIN=${copyparty_admin_pass:-$(openssl rand -base64 36)}
-read -p "Enter user account password " copyparty_user_pass
+read -p "Enter user account password: " copyparty_user_pass
 COPYPARTY_PASSWORD_USER=${copyparty_user_pass:-$(openssl rand -base64 36)}
-read -p "Enter webdav account password " copyparty_webdav_pass
+read -p "Enter webdav account password: " copyparty_webdav_pass
 COPYPARTY_PASSWORD_WEBDAV=${copyparty_webdav_pass:-$(openssl rand -base64 36)}
-
+cat > $HOME/copyparty-credentials <<copyparty-credentials
+admin: $COPYPARTY_PASSWORD_ADMIN
+user: $COPYPARTY_PASSWORD_USER
+webdav: $COPYPARTY_PASSWORD_WEBDAV
+copyparty-credentials
+echo "Your credentials have been copied to $HOME/copyparty-credentials"
 cat > $HOME/.config/copyparty/copyparty.conf <<copyparty-config
 [global]
   p: $COPYPARTY_PORT
