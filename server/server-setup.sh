@@ -8,7 +8,6 @@ sudo groupadd -f docker
 sudo usermod -aG docker $USER
 sudo systemctl enable --now docker.service
 sudo systemctl enable --now containerd.service
-sudo newgrp
 
 ## ddclient
 sudo mkdir -p /etc/ddclient
@@ -72,7 +71,7 @@ services:
             - ./data:/data
             - ./letsencrypt:/etc/letsencrypt
 nginx-config
-    docker compose up -d
+    sudo docker compose up -d
     sudo ufw allow $NGINX_UI_PORT
     sudo ufw allow 443/tcp
     sudo ufw allow 80/tcp
@@ -110,7 +109,7 @@ karakeep-env
     sudo ufw allow $KARAKEEP_PORT/tcp
     echo "This is your NextAuth Secret: "$KARAKEEP_NEXTAUTH_SECRET" Copy it down."
     echo "This is your Meili Master Key: "$KARAKEEP_MEILI_KEY" Copy it down."
-    docker compose up -d
+    sudo docker compose up -d
 )
 
 # Copyparty
@@ -237,7 +236,7 @@ services:
         image: overleafcep/sharelatex:6.0.1-ext-v3.3
 docker-override
     sudo ufw allow $OVERLEAF_PORT
-    bin/up -d
+    sudo bin/up -d
 )
 
 # vert.sh
@@ -253,7 +252,7 @@ fi
     cd $HOME/vert
     read -p "Enter the port to listen on (default 4000): " vert_port_input
     VERT_PORT=${vert_port_input:-4000}
-    docker build -t vert-sh/vert \
+    sudo docker build -t vert-sh/vert \
         --build-arg PUB_ENV=production \
         --build-arg PUB_HOSTNAME=vert.sh \
         --build-arg PUB_PLAUSIBLE_URL=https://plausible.example.com \
@@ -261,7 +260,7 @@ fi
         --build-arg PUB_DONATION_URL=https://donations.vert.sh \
     	--build-arg PUB_DISABLE_ALL_EXTERNAL_REQUESTS=false \
         --build-arg PUB_STRIPE_KEY="" .
-    docker run -d \
+    sudo docker run -d \
         --restart unless-stopped \
         -p $VERT_PORT:80 \
         --name "vert" \
@@ -291,11 +290,13 @@ services:
             - ./stirling-data:/configs
         restart: unless-stopped
 stirling-pdf
-    docker compose up -d
+    sudo docker compose up -d
 )
 
 # mpd server
 mkdir -p $HOME/.config/mpd
+mkdir -p $HOME/hdd/music
+mkdir -p $HOME/hdd/mpd
 read -p "Enter the port to listen on (default 6000): " mpd_port_input
 MPD_PORT=${mpd_port_input:-6000}
 read -p "Enter the IP to listen on (default 0.0.0.0): " mpd_ip_input
