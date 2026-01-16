@@ -101,6 +101,8 @@ fi
     KARAKEEP_MEILI_KEY=${meilikey_string_input:-$(openssl rand -base64 36)}
     read -p "Enter the port to listen on (default 1000): " karakeep_port_input
     KARAKEEP_PORT=${karakeep_port_input:-1000}
+    read -p "Enter the URL to listen on (default 0.0.0.0): " karakeep_port_input
+    KARAKEEP_PORT=${karakeep_port_input:-0.0.0.0}
     sed -i "s/3000:3000/$KARAKEEP_PORT:3000/" docker-compose.yml
     cat > ".env" <<karakeep-env
 KARAKEEP_VERSION=release
@@ -156,7 +158,7 @@ cat > $HOME/.config/copyparty/copyparty.conf <<copyparty-config
         a: admin
 
 [/documents]
-    /hdd/downloads
+    /hdd/documents
     accs:
         rwmd: user, admin
         a: admin
