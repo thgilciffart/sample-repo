@@ -17,4 +17,5 @@ trash-cli
 mpd
 bat
 7zip
+openssl
 zoxide

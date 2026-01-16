@@ -1,14 +1,40 @@
-#!/bin/sh
-
+#!/bin/bash
+set -e
 # Install server packages
 
 yay -S --needed - <./server-packages.txt
 
 # Docker set up
-sudo groupadd docker
+sudo groupadd -f docker
 sudo usermod -aG docker $USER
 sudo systemctl enable --now docker.service
 sudo systemctl enable --now containerd.service
+
+## ddclient
+cat <<ddclient-config | sudo tee /etc/ddclient/ddclient.conf > /dev/null
+daemon=300                      # check every 300 seconds
+syslog=yes                      # log update msgs to syslog
+mail=root                       # mail all msgs to root
+mail-failure=root               # mail failed update msgs to root
+pid=/var/run/ddclient.pid
+
+##
+## CloudFlare (www.cloudflare.com)
+##
+protocol=cloudflare,
+zone=DOMAIN_0.COM,
+ttl=1,
+password='CLOUDFLARE TOKEN'
+SUBDOMAIN_DOMAIN_0.COM
+
+protocol=cloudflare,
+zone=DOMAIN_1.COM,
+ttl=1,
+password='CLOUDFLARE TOKEN'
+SUBDOMAIN.DOMAIN_1.COM
+ddclient-config
+echo "Make sure to manually configure /etc/ddclient/ddclient.conf"
+sudo systemctl enable --now ddclient.service
 
 # nginx proxy manager
 if [ -d "$HOME/nginx-proxy-manager" ]; then
@@ -86,8 +112,57 @@ karakeep-env
     docker compose up -d
 )
 
-
 # Copyparty
+mkdir -p $HOME/.config/copyparty
+read -p "Enter the port to listen on (default 2000): " copyparty_port_input
+COPYPARTY_PORT=${copyparty_port_input:-2000}
+read -p "Enter admin account password " copyparty_admin_pass
+COPYPARTY_PASSWORD_ADMIN=${copyparty_admin_pass:-$(openssl rand -base64 36)}
+read -p "Enter user account password " copyparty_user_pass
+COPYPARTY_PASSWORD_USER=${copyparty_user_pass:-$(openssl rand -base64 36)}
+read -p "Enter webdav account password " copyparty_webdav_pass
+COPYPARTY_PASSWORD_WEBDAV=${copyparty_webdav_pass:-$(openssl rand -base64 36)}
+
+cat > $HOME/.config/copyparty/copyparty.conf <<copyparty-config
+[global]
+  p: $COPYPARTY_PORT
+  e2dsa  # enable file indexing and filesystem scanning
+  z, qr  # and zeroconf and qrcode (you can comma-separate arguments)
+
+[accounts]
+  admin: $COPYPARTY_PASSWORD_ADMIN
+  user: $COPYPARTY_PASSWORD_USER
+  webdav: $COPYPARTY_PASSWORD_WEBDAV
+
+# create volumes:
+[/hdd]
+    /hdd
+    accs:
+        r: user
+        a: admin
+
+[/downloads]
+    /hdd/downloads
+    accs:
+        rwmd: user, admin
+        a: admin
+
+[/documents]
+    /hdd/downloads
+    accs:
+        rwmd: user, admin
+        a: admin
+
+[/webdav]
+    /hdd/webdav
+    accs:
+        rwd: webdav
+        rwmd: user, admin
+        a: admin
+copyparty-config
+sudo systemctl enable --now copyparty.service
+sudo cp $HOME/.config/copyparty/copyparty.conf /etc/copyparty/copyparty.conf
+sudo ufw allow $COPYPARTY_PORT
 
 # overleaf
 if [ -d "$HOME/overleaf" ]; then
@@ -163,15 +238,20 @@ docker-override
     bin/up -d
 )
 
-# syncthing
-
-# mpd server
-
 # vert.sh
-git clone https://github.com/VERT-sh/VERT $HOME/vert.sh
+if [ -d "$HOME/vert" ]; then
+    echo "Directory exists. Moving..."
+    mv "$HOME/vert" "$HOME/vert.old"
+    git clone https://github.com/VERT-sh/VERT $HOME/vert
+else
+    echo "Directory does not exist. Creating..."
+    git clone https://github.com/VERT-sh/VERT $HOME/vert
+fi
 (
-    cd $HOME/vert.sh
-    docker build -t vert-sh/vert
+    cd $HOME/vert
+    read -p "Enter the port to listen on (default 4000): " vert_port_input
+    VERT_PORT=${vert_port_input:-4000}
+    docker build -t vert-sh/vert \
         --build-arg PUB_ENV=production \
         --build-arg PUB_HOSTNAME=vert.sh \
         --build-arg PUB_PLAUSIBLE_URL=https://plausible.example.com \
@@ -181,26 +261,63 @@ git clone https://github.com/VERT-sh/VERT $HOME/vert.sh
         --build-arg PUB_STRIPE_KEY="" .
     docker run -d \
         --restart unless-stopped \
-        -p 3000:80 \
+        -p $VERT_PORT:80 \
         --name "vert" \
         vert-sh/vert
 )
 # stirling pdf
-mkdir $HOME/stirling-pdf
+if [ -d "$HOME/sterling-pdf" ]; then
+    echo "Directory exists. Moving..."
+    mv "$HOME/sterling-pdf" "$HOME/sterling-pdf.old"
+    mkdir -p $HOME/sterling-pdf
+else
+    echo "Directory does not exist. Creating..."
+    mkdir -p $HOME/sterling-pdf
+fi
 (
     cd $HOME/stirling-pdf
-    read -p "Enter the port to listen on (default 1000): " stirling_port_input
-    STIRLING_PORT=${stirling_port_input:-1000}
+    read -p "Enter the port to listen on (default 5000): " stirling_port_input
+    STIRLING_PORT=${stirling_port_input:-5000}
     cat >docker-compose.yml <<stirling-pdf
 services:
     stirling-pdf:
-    image: stirlingtools/stirling-pdf:latest-ultra-lite
-    container_name: stirling-pdf
-    ports:
-        - ':8080'
-    volumes:
-        - ./stirling-data:/configs
-    restart: unless-stopped
+        image: stirlingtools/stirling-pdf:latest-ultra-lite
+        container_name: stirling-pdf
+        ports:
+            - '$STIRLING_PORT:8080'
+        volumes:
+            - ./stirling-data:/configs
+        restart: unless-stopped
 stirling-pdf
 )
-# misc. services
+
+# mpd server
+mkdir -p $HOME/.config/mpd
+read -p "Enter the port to listen on (default 6000): " mpd_port_input
+MPD_PORT=${mpd_port_input:-6000}
+read -p "Enter the IP to listen on (default 0.0.0.0): " mpd_ip_input
+MPD_LISTENING_IP=${mpd_ip_input:-0.0.0.0}
+cat > $HOME/.config/mpd/mpd.conf <<mpd-config
+music_directory         "/hdd/music"
+playlist_directory      "/hdd/mpd/playlists"
+db_file                 "/hdd/mpd/tag_cache"
+pid_file                "/hdd/mpd/pid"
+state_file              "/hdd/mpd/state"
+sticker_file            "/hdd/mpd/sticker.sql"
+bind_to_address         "$MPD_LISTENING_IP"
+port                    "$MPD_PORT"
+bind_to_address         "/hdd/mpd/socket"
+
+audio_output {
+    type        "httpd"
+    name        "mpd server"
+    encoder     "lame"      # Needs 'lame' installed
+    bitrate     "128"
+    format      "44100:16:1"
+    always_on   "yes"       # prevent MPD from disconnecting on pause
+    tags        "yes"       # httpd supports sending tags to listening streams.
+}
+mpd-config
+sudo ufw allow $MPD_PORT
+sudo cp $HOME/.config/mpd/mpd.conf /etc/mpd.conf
+sudo systemctl enable --now mpd.service

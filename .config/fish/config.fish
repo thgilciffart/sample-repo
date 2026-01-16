@@ -3,17 +3,10 @@ set -gx FZF_CTRL_T_OPTS "
   --preview-window right:50%:wrap
 "
 
-alias ls="eza --icons always -1 -l -B --no-permissions -la"
+alias ls="eza --icons always -1"
 alias vim="nvim"
 
 set fish_greeting
-
-function remove_path
-    if set -l index (contains -i "$argv" $fish_user_paths)
-        set -e fish_user_paths[$index]
-        echo "Removed $argv from the path"
-    end
-end
 
 zoxide init fish | source
 fzf --fish | source

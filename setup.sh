@@ -3,7 +3,7 @@
 sudo pacman -S yay
 
 # Install universal packages
-sudo pacman -S --needed - <./devices/universal-packages.txt
+yay -S --needed - <./devices/universal-packages.txt
 
 # Syncthing configuration
 # Load up default syncthing configuration
@@ -27,12 +27,14 @@ sudo ufw allow ssh
 # Set fish as the default shell
 command -v fish | sudo tee -a /etc/shells
 chsh -s "$(command -v fish)"
-# Installing fish plugins
-fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
-fish -c "fisher install jorgebucaran/nvm.fish"
-fish -c "fisher install IlanCosman/tide@v6"
-fish -c "fisher install PatrickF1/fzf.fish"
-fish -c "nvm install latest"
+# Install fish plugins
+fish -c '
+curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+fisher install jorgebucaran/nvm.fish
+fisher install IlanCosman/tide@v6
+fisher install PatrickF1/fzf.fish
+nvm install latest
+'
 
 # Add .config to system
-cp -r ./devices/.configa $HOME
+# cp -r ./devices/.config $HOME

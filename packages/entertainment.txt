@@ -1,8 +1,0 @@
-vesktop
-mpv
-lollypop
-mprisence
-mpd
-rmpc
-mpd-mpris
-mpdscribble
