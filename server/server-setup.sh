@@ -1,17 +1,177 @@
 #!/bin/bash
 
 echo "
-┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
-└─┐└┬┘└─┐ │ ├┤ │││  └─┐├┤  │ │ │├─┘
-└─┘ ┴ └─┘ ┴ └─┘┴ ┴  └─┘└─┘ ┴ └─┘┴  
+█████████                      █████                                                  █████
+███░░░░░███                    ░░███                                                  ░░███
+░███    ░░░  █████ ████  █████  ███████    ██████  █████████████       █████   ██████  ███████   █████ ████ ████████
+░░█████████ ░░███ ░███  ███░░  ░░░███░    ███░░███░░███░░███░░███     ███░░   ███░░███░░░███░   ░░███ ░███ ░░███░░███
+░░░░░░░░███ ░███ ░███ ░░█████   ░███    ░███████  ░███ ░███ ░███    ░░█████ ░███████   ░███     ░███ ░███  ░███ ░███
+███    ░███ ░███ ░███  ░░░░███  ░███ ███░███░░░   ░███ ░███ ░███     ░░░░███░███░░░    ░███ ███ ░███ ░███  ░███ ░███
+░░█████████  ░░███████  ██████   ░░█████ ░░██████  █████░███ █████    ██████ ░░██████   ░░█████  ░░████████ ░███████
+░░░░░░░░░    ░░░░░███ ░░░░░░     ░░░░░   ░░░░░░  ░░░░░ ░░░ ░░░░░    ░░░░░░   ░░░░░░     ░░░░░    ░░░░░░░░  ░███░░░
+            ███ ░███                                                                                      ░███
+           ░░██████                                                                                       █████
+            ░░░░░░                                                                                       ░░░░░
 "
+echo "Installing AUR packages"
 yay -S --needed $(<server-pkglist.txt)
-loginctl enable-linger $USER
+echo "Enabling linger for current user"
+sudo loginctl enable-linger $USER
 
 echo "
-┌┬┐┌─┐┌─┐┬┌─┌─┐┬─┐  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
- │││ ││  ├┴┐├┤ ├┬┘  └─┐├┤  │ │ │├─┘
-─┴┘└─┘└─┘┴ ┴└─┘┴└─  └─┘└─┘ ┴ └─┘┴  
+█████████       █████   █████████                                     █████    █████   █████
+███░░░░░███     ░░███   ███░░░░░███                                   ░░███    ░░███   ░░███
+░███    ░███   ███████  ███     ░░░  █████ ████  ██████   ████████   ███████     ░███    ░███   ██████  █████████████    ██████
+░███████████  ███░░███ ░███         ░░███ ░███  ░░░░░███ ░░███░░███ ███░░███     ░███████████  ███░░███░░███░░███░░███  ███░░███
+░███░░░░░███ ░███ ░███ ░███    █████ ░███ ░███   ███████  ░███ ░░░ ░███ ░███     ░███░░░░░███ ░███ ░███ ░███ ░███ ░███ ░███████
+░███    ░███ ░███ ░███ ░░███  ░░███  ░███ ░███  ███░░███  ░███     ░███ ░███     ░███    ░███ ░███ ░███ ░███ ░███ ░███ ░███░░░
+█████   █████░░████████ ░░█████████  ░░████████░░████████ █████    ░░████████    █████   █████░░██████  █████░███ █████░░██████
+░░░░░   ░░░░░  ░░░░░░░░   ░░░░░░░░░    ░░░░░░░░  ░░░░░░░░ ░░░░░      ░░░░░░░░    ░░░░░   ░░░░░  ░░░░░░  ░░░░░ ░░░ ░░░░░  ░░░░░░
+"
+
+curl -L https://static.adguard.com/adguardhome/release/AdGuardHome_linux_386.tar.gz | tar -xz -C $HOME
+(
+    cd $HOME/AdGuardHome
+    sudo ./AdGuardHome -s install
+    sudo ufw allow 81
+    sudo ufw allow 53
+)
+
+echo "
+█████████                █████     █████
+███░░░░░███              ░░███     ░░███
+███     ░░░   ██████    ███████   ███████  █████ ████
+░███          ░░░░░███  ███░░███  ███░░███ ░░███ ░███
+░███           ███████ ░███ ░███ ░███ ░███  ░███ ░███
+░░███     ███ ███░░███ ░███ ░███ ░███ ░███  ░███ ░███
+░░█████████ ░░████████░░████████░░████████ ░░███████
+░░░░░░░░░   ░░░░░░░░  ░░░░░░░░  ░░░░░░░░   ░░░░░███
+                                          ███ ░███
+                                         ░░██████
+                                          ░░░░░░
+"
+mkdir -p $HOME/Caddy /etc/caddy /var/log/caddy
+(
+    cd $HOME/Caddy
+    xcaddy build \
+        --with github.com/mholt/caddy-dynamicdns \
+        --with github.com/caddy-dns/cloudflare \
+        --with github.com/jpillora/ipfilter-caddy
+    sudo mv caddy /usr/bin/
+    sudo groupadd --system caddy
+    sudo useradd --system \
+        --gid caddy \
+        --create-home \
+        --home-dir /var/lib/caddy \
+        --shell /usr/sbin/nologin \
+        --comment "Caddy web server" \
+        caddy
+    sudo setcap cap_net_bind_service+ep /usr/bin/caddy
+    sudo chown -R caddy:caddy /etc/caddy /var/log/caddy /var/lib/caddy
+    cat >Caddyfile <<caddy-config
+{
+	dynamic_dns {
+		provider cloudflare TOKEN
+		domains {
+		    domain.com @
+			domain.com sub
+		}
+		check_interval 5m
+	}
+
+	log {
+		output file /var/log/caddy/access.log
+		format json
+		roll_size 10mb
+		roll_keep_for 720h
+		roll_keep 20
+	}
+}
+
+(headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Frame-Options "SAMEORIGIN"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+}
+
+domain.com {
+	import headers
+	trusted_proxies cloudflare
+
+	@is_foreign_threat {
+		not remote_ip private_ranges
+		not ipfilter_geolocation {
+			allow_countries AU
+		}
+	}
+
+	handle @is_foreign_threat {
+		respond "Access Restricted" 403
+	}
+
+	handle {
+		reverse_proxy IP:PORT
+	}
+
+	handle_errors {
+		@denied expression {err.status_code} == 403
+		respond @denied "Access restricted" 403
+	}
+}
+caddy-config
+sudo cp Caddyfile /etc/caddy/Caddyfile
+)
+sudo curl -o /etc/systemd/system/caddy.service https://raw.githubusercontent.com/caddyserver/dist/refs/heads/master/init/caddy.service
+sudo ufw allow 443,80/tcp
+sudo systemctl enable --now caddy.service
+
+echo "
+███████████            ███  ████   ████████  █████
+░░███░░░░░░█           ░░░  ░░███  ███░░░░███░░███
+░███   █ ░   ██████   ████  ░███ ░░░    ░███ ░███████   ██████   ████████
+░███████    ░░░░░███ ░░███  ░███    ███████  ░███░░███ ░░░░░███ ░░███░░███
+░███░░░█     ███████  ░███  ░███   ███░░░░   ░███ ░███  ███████  ░███ ░███
+░███  ░     ███░░███  ░███  ░███  ███      █ ░███ ░███ ███░░███  ░███ ░███
+█████      ░░████████ █████ █████░██████████ ████████ ░░████████ ████ █████
+░░░░░        ░░░░░░░░ ░░░░░ ░░░░░ ░░░░░░░░░░ ░░░░░░░░   ░░░░░░░░ ░░░░ ░░░░░
+"
+mkdir -p $HOME/fail2ban
+(
+    cd $HOME/fail2ban
+    cat >caddy-403.conf <<fail2ban-caddy
+[Definition]
+failregex = ^.*"client_ip":"<HOST>",.*?"status":403,.*$
+
+datepattern = LongEpoch
+fail2ban-caddy
+    cat >caddy.local <<fail2ban-jail-caddy
+[caddy-403]
+enabled = true
+port = http,https
+filter = caddy-403
+logpath = /var/log/caddy/access.log
+maxretry = 5
+findtime = 10m
+bantime = 1d
+banaction = ufw
+fail2ban-jail-caddy
+sudo cp caddy-403.conf /etc/fail2ban/filter.d/caddy-403.conf
+sudo cp caddy.local /etc/fail2ban/jail.d/caddy.local
+sudo systemctl enable --now fail2ban
+)
+
+echo "
+██████████                     █████
+░░███░░░░███                   ░░███
+░███   ░░███  ██████   ██████  ░███ █████  ██████  ████████
+░███    ░███ ███░░███ ███░░███ ░███░░███  ███░░███░░███░░███
+░███    ░███░███ ░███░███ ░░░  ░██████░  ░███████  ░███ ░░░
+░███    ███ ░███ ░███░███  ███ ░███░░███ ░███░░░   ░███
+██████████  ░░██████ ░░██████  ████ █████░░██████  █████
+░░░░░░░░░░    ░░░░░░   ░░░░░░  ░░░░ ░░░░░  ░░░░░░  ░░░░░
 "
 sudo groupadd -f docker
 sudo usermod -aG docker $USER
@@ -19,87 +179,17 @@ sudo systemctl enable --now docker.service
 sudo systemctl enable --now containerd.service
 
 echo "
-┌┬┐┌┬┐┌─┐┬  ┬┌─┐┌┐┌┌┬┐  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
- ││ │││  │  │├┤ │││ │   └─┐├┤  │ │ │├─┘
-─┴┘─┴┘└─┘┴─┘┴└─┘┘└┘ ┴   └─┘└─┘ ┴ └─┘┴
-"
-
-sudo mkdir -p /etc/ddclient
-cat <<ddclient-config | sudo tee /etc/ddclient/ddclient.conf >/dev/null
-daemon=300                      # check every 300 seconds
-syslog=yes                      # log update msgs to syslog
-mail=root                       # mail all msgs to root
-mail-failure=root               # mail failed update msgs to root
-pid=/var/run/ddclient.pid
-
-##
-## cloudflare (www.cloudflare.com)
-##
-protocol=cloudflare,
-zone=domain_0.com,
-ttl=1,
-password='cloudflare token'
-subdomain_domain_0.com
-
-protocol=cloudflare,
-zone=domain_1.com,
-ttl=1,
-password='cloudflare token'
-subdomain.domain_1.com
-ddclient-config
-sudo systemctl enable --now ddclient.service
-
-echo "
-┌┐┌┌─┐┬┌┐┌─┐ ┬  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
-││││ ┬││││┌┴┬┘  └─┐├┤  │ │ │├─┘
-┘└┘└─┘┴┘└┘┴ └─  └─┘└─┘ ┴ └─┘┴
-"
-echo "Setting up nginx proxy manager"
-if [ -d "$HOME/nginx-proxy-manager" ]; then
-  echo "Directory exists. Moving..."
-  mv "$HOME/nginx-proxy-manager" "$HOME/nginx-proxy-manager.old"
-  mkdir -p "$HOME/nginx-proxy-manager"
-else
-  echo "Directory does not exist. Creating..."
-  mkdir -p "$HOME/nginx-proxy-manager"
-fi
-(
-  cd $HOME/nginx-proxy-manager
-  read -p "Enter web UI port (defaults to 81): " nginx_ui_port_input
-  NGINX_UI_PORT=${nginx_ui_port_input:-81}
-  read -p "Enter time zone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones (defaults to Australia/Sydney): " nginx_timezone_input
-  NGINX_TIMEZONE=${nginx_timezone_input:-Australia/Sydney}
-  read -p "Disable IPv6? (true/false): " nginx_ipv6_input
-  NGINX_IPV6=${nginx_ipv6_input:-true}
-  cat >docker-compose.yml <<nginx-config
-services:
-    app:
-        image: 'jc21/nginx-proxy-manager:latest'
-        restart: unless-stopped
-
-        ports:
-          - '80:80' # Public HTTP Port
-          - '443:443' # Public HTTPS Port
-          - '$NGINX_UI_PORT:81' # Admin Web Port
-
-        environment:
-            TZ: "$NGINX_TIMEZONE"
-            DISABLE_IPV6: '$NGINX_IPV6'
-
-        volumes:
-            - ./data:/data
-            - ./letsencrypt:/etc/letsencrypt
-nginx-config
-  sudo docker compose up -d
-  sudo ufw allow $NGINX_UI_PORT
-  sudo ufw allow 443/tcp
-  sudo ufw allow 80/tcp
-)
-
-echo "
-┬┌─┌─┐┬─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
-├┴┐├─┤├┬┘├─┤├┴┐├┤ ├┤ ├─┘  └─┐├┤  │ │ │├─┘
-┴ ┴┴ ┴┴└─┴ ┴┴ ┴└─┘└─┘┴    └─┘└─┘ ┴ └─┘┴
+█████   ████                               █████
+░░███   ███░                               ░░███
+░███  ███     ██████   ████████   ██████   ░███ █████  ██████   ██████  ████████
+░███████     ░░░░░███ ░░███░░███ ░░░░░███  ░███░░███  ███░░███ ███░░███░░███░░███
+░███░░███     ███████  ░███ ░░░   ███████  ░██████░  ░███████ ░███████  ░███ ░███
+░███ ░░███   ███░░███  ░███      ███░░███  ░███░░███ ░███░░░  ░███░░░   ░███ ░███
+█████ ░░████░░████████ █████    ░░████████ ████ █████░░██████ ░░██████  ░███████
+░░░░░   ░░░░  ░░░░░░░░ ░░░░░      ░░░░░░░░ ░░░░ ░░░░░  ░░░░░░   ░░░░░░   ░███░░░
+                                                                        ░███
+                                                                        █████
+                                                                       ░░░░░
 "
 if [ -d "$HOME/karakeep" ]; then
   echo "Directory exists. Moving..."
@@ -120,8 +210,6 @@ fi
   KARAKEEP_MEILI_KEY=${meilikey_string_input:-$(openssl rand -base64 36)}
   read -p "Enter the port to listen on (default 1000): " karakeep_port_input
   KARAKEEP_PORT=${karakeep_port_input:-1000}
-  read -p "Enter the URL to listen on (default 0.0.0.0): " karakeep_port_input
-  KARAKEEP_PORT=${karakeep_port_input:-0.0.0.0}
   sed -i "s/3000:3000/$KARAKEEP_PORT:3000/" docker-compose.yml
   cat >".env" <<karakeep-env
 KARAKEEP_VERSION=release
@@ -136,9 +224,17 @@ karakeep-env
 )
 
 echo "
-┌─┐┌─┐┌─┐┬ ┬┌─┐┌─┐┬─┐┌┬┐┬ ┬  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
-│  │ │├─┘└┬┘├─┘├─┤├┬┘ │ └┬┘  └─┐├┤  │ │ │├─┘
-└─┘└─┘┴   ┴ ┴  ┴ ┴┴└─ ┴  ┴   └─┘└─┘ ┴ └─┘┴  
+█████████                                                               █████
+███░░░░░███                                                             ░░███
+███     ░░░   ██████  ████████  █████ ████ ████████   ██████   ████████  ███████   █████ ████
+░███          ███░░███░░███░░███░░███ ░███ ░░███░░███ ░░░░░███ ░░███░░███░░░███░   ░░███ ░███
+░███         ░███ ░███ ░███ ░███ ░███ ░███  ░███ ░███  ███████  ░███ ░░░   ░███     ░███ ░███
+░░███     ███░███ ░███ ░███ ░███ ░███ ░███  ░███ ░███ ███░░███  ░███       ░███ ███ ░███ ░███
+░░█████████ ░░██████  ░███████  ░░███████  ░███████ ░░████████ █████      ░░█████  ░░███████
+░░░░░░░░░   ░░░░░░   ░███░░░    ░░░░░███  ░███░░░   ░░░░░░░░ ░░░░░        ░░░░░    ░░░░░███
+                    ░███       ███ ░███  ░███                                     ███ ░███
+                    █████     ░░██████   █████                                   ░░██████
+                   ░░░░░       ░░░░░░   ░░░░░                                     ░░░░░░
 "
 mkdir -p $HOME/.config/copyparty
 mkdir -p /hdd/media /hdd/music /hdd/webdav /hdd/documents /hdd/downloads
@@ -212,9 +308,15 @@ sudo cp $HOME/.config/copyparty/copyparty.conf /etc/copyparty/copyparty.conf
 sudo ufw allow $COPYPARTY_PORT
 
 echo "
-┌─┐┬  ┬┌─┐┬─┐┬  ┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
-│ │└┐┌┘├┤ ├┬┘│  ├┤ ├─┤├┤   └─┐├┤  │ │ │├─┘
-└─┘ └┘ └─┘┴└─┴─┘└─┘┴ ┴└    └─┘└─┘ ┴ └─┘┴  
+███████                                   ████                        ██████
+███░░░░░███                                ░░███                       ███░░███
+███     ░░███ █████ █████  ██████  ████████  ░███   ██████   ██████    ░███ ░░░
+░███      ░███░░███ ░░███  ███░░███░░███░░███ ░███  ███░░███ ░░░░░███  ███████
+░███      ░███ ░███  ░███ ░███████  ░███ ░░░  ░███ ░███████   ███████ ░░░███░
+░░███     ███  ░░███ ███  ░███░░░   ░███      ░███ ░███░░░   ███░░███   ░███
+░░░███████░    ░░█████   ░░██████  █████     █████░░██████ ░░████████  █████
+░░░░░░░       ░░░░░     ░░░░░░  ░░░░░     ░░░░░  ░░░░░░   ░░░░░░░░  ░░░░░
+
 "
 if [ -d "$HOME/overleaf" ]; then
   echo "Directory exists. Moving..."
@@ -286,9 +388,9 @@ ENABLE_CONVERSIONS=true
 
 OVERLEAF_TEMPLATE_GALLERY=true
 OVERLEAF_NON_ADMIN_CAN_PUBLISH_TEMPLATES=true
-OVERLEAF_TEMPLATE_CATEGORIES=General 
+OVERLEAF_TEMPLATE_CATEGORIES=General
 
-TEMPLATE_ACADEMIC_JOURNAL_NAME=General 
+TEMPLATE_ACADEMIC_JOURNAL_NAME=General
 TEMPLATE_ACADEMIC_JOURNAL_DESCRIPTION=Some general templates
 overleaf_variables
   cat >./config/docker-compose.override.yml <<docker-override
@@ -302,9 +404,14 @@ docker-override
 )
 
 echo "
-┬  ┬┌─┐┬─┐┌┬┐  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
-└┐┌┘├┤ ├┬┘ │   └─┐├┤  │ │ │├─┘
- └┘ └─┘┴└─ ┴   └─┘└─┘ ┴ └─┘┴  
+█████   █████ ██████████ ███████████   ███████████            █████
+░░███   ░░███ ░░███░░░░░█░░███░░░░░███ ░█░░░███░░░█           ░░███
+░███    ░███  ░███  █ ░  ░███    ░███ ░   ░███  ░      █████  ░███████
+░███    ░███  ░██████    ░██████████      ░███        ███░░   ░███░░███
+░░███   ███   ░███░░█    ░███░░░░░███     ░███       ░░█████  ░███ ░███
+ ░░░█████░    ░███ ░   █ ░███    ░███     ░███        ░░░░███ ░███ ░███
+   ░░███      ██████████ █████   █████    █████    ██ ██████  ████ █████
+    ░░░      ░░░░░░░░░░ ░░░░░   ░░░░░    ░░░░░    ░░ ░░░░░░  ░░░░ ░░░░░
 "
 if [ -d "$HOME/vert" ]; then
   echo "Directory exists. Moving..."
@@ -333,10 +440,18 @@ fi
     vert-sh/vert
 )
 
-echo " 
-┌─┐┌┬┐┬┬─┐┬  ┬┌┐┌┌─┐  ┌─┐┌┬┐┌─┐  ┌─┐┌─┐┌┬┐┬ ┬┌─┐
-└─┐ │ │├┬┘│  │││││ ┬  ├─┘ ││├┤   └─┐├┤  │ │ │├─┘
-└─┘ ┴ ┴┴└─┴─┘┴┘└┘└─┘  ┴  ─┴┘└    └─┘└─┘ ┴ └─┘┴  
+echo "
+  █████████   █████     ███            ████   ███                         ███████████  ██████████   ███████████
+ ███░░░░░███ ░░███     ░░░            ░░███  ░░░                         ░░███░░░░░███░░███░░░░███ ░░███░░░░░░█
+░███    ░░░  ███████   ████  ████████  ░███  ████  ████████    ███████    ░███    ░███ ░███   ░░███ ░███   █ ░
+░░█████████ ░░░███░   ░░███ ░░███░░███ ░███ ░░███ ░░███░░███  ███░░███    ░██████████  ░███    ░███ ░███████
+ ░░░░░░░░███  ░███     ░███  ░███ ░░░  ░███  ░███  ░███ ░███ ░███ ░███    ░███░░░░░░   ░███    ░███ ░███░░░█
+ ███    ░███  ░███ ███ ░███  ░███      ░███  ░███  ░███ ░███ ░███ ░███    ░███         ░███    ███  ░███  ░
+░░█████████   ░░█████  █████ █████     █████ █████ ████ █████░░███████    █████        ██████████   █████
+ ░░░░░░░░░     ░░░░░  ░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░ ░░░░░  ░░░░░███   ░░░░░        ░░░░░░░░░░   ░░░░░
+                                                              ███ ░███
+                                                             ░░██████
+                                                              ░░░░░░
 "
 if [ -d "$HOME/stirling-pdf" ]; then
   echo "Directory exists. Moving..."
@@ -364,21 +479,51 @@ stirling-pdf
   sudo docker compose up -d
 )
 echo "
-╦╔╦╗╔╦╗╦╔═╗╦ ╦  ╔═╗╔═╗╔╦╗╦ ╦╔═╗
-║║║║║║║║║  ╠═╣  ╚═╗║╣  ║ ║ ║╠═╝
-╩╩ ╩╩ ╩╩╚═╝╩ ╩  ╚═╝╚═╝ ╩ ╚═╝╩  
+█████                                  ███           █████
+░░███                                  ░░░           ░░███
+░███  █████████████   █████████████   ████   ██████  ░███████
+░███ ░░███░░███░░███ ░░███░░███░░███ ░░███  ███░░███ ░███░░███
+░███  ░███ ░███ ░███  ░███ ░███ ░███  ░███ ░███ ░░░  ░███ ░███
+░███  ░███ ░███ ░███  ░███ ░███ ░███  ░███ ░███  ███ ░███ ░███
+█████ █████░███ █████ █████░███ █████ █████░░██████  ████ █████
+░░░░░ ░░░░░ ░░░ ░░░░░ ░░░░░ ░░░ ░░░░░ ░░░░░  ░░░░░░  ░░░░ ░░░░░
 "
+mkdir /hdd/immich
+(
+  cd /hdd/immich
+  wget -O docker-compose.yml https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+  wget -O .env https://github.com/immich-app/immich/releases/latest/download/example.env
+  read -p "Enter the port to listen on (defaults to 6000): " immich_port_input
+  IMMICH_PORT=${immich_port_input:-6000}
+  read -p "Enter timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones (defaults to Australia/Sydney): " immich_tz_input
+  IMMICH_TZ=${immich_tz_input:-Australia/Sydney}
+  read -p "Enter postgres password secret (defaults to random string): " immich_postgres_pw_input
+  IMMICH_POSTGRES_PW=${immich_postgres_pw_input:-$(openssl rand -base64 36)}
+  sed -i "s/# TZ=Etc/UTC/TZ=$IMMICH_TZ/" .env
+  sed -i "s/DB_PASSWORD=postgres/DB_PASSWORD=$IMMICH_POSTGRES_PW/" .env
+  sed -i "s/2283:2283/$IMMICH_PORT:2283/" docker-compose.yml
+  sudo ufw allow $IMMICH_PORT
+  sudo docker compose up -d
+)
 
 echo "
-╔╦╗╔═╗╔╦╗  ╔═╗╔═╗╔╦╗╦ ╦╔═╗
-║║║╠═╝ ║║  ╚═╗║╣  ║ ║ ║╠═╝
-╩ ╩╩  ═╩╝  ╚═╝╚═╝ ╩ ╚═╝╩
+                               █████
+                              ░░███
+ █████████████   ████████   ███████
+░░███░░███░░███ ░░███░░███ ███░░███
+ ░███ ░███ ░███  ░███ ░███░███ ░███
+ ░███ ░███ ░███  ░███ ░███░███ ░███
+ █████░███ █████ ░███████ ░░████████
+░░░░░ ░░░ ░░░░░  ░███░░░   ░░░░░░░░
+                 ░███
+                 █████
+                ░░░░░
 "
 mkdir -p $HOME/.config/mpd
 mkdir -p /hdd/music
 mkdir -p /hdd/mpd
-read -p "Enter the port to listen on (default 6000): " mpd_port_input
-MPD_PORT=${mpd_port_input:-6000}
+read -p "Enter the port to listen on (default 7000): " mpd_port_input
+MPD_PORT=${mpd_port_input:-7000}
 read -p "Enter the IP to listen on (default 0.0.0.0): " mpd_ip_input
 MPD_LISTENING_IP=${mpd_ip_input:-0.0.0.0}
 cat >$HOME/.config/mpd/mpd.conf <<mpd-config
@@ -405,5 +550,3 @@ mpd-config
 sudo ufw allow $MPD_PORT
 sudo cp $HOME/.config/mpd/mpd.conf /etc/mpd.conf
 sudo systemctl enable --now mpd.service
-
-echo "Make sure to manually configure /etc/ddclient/ddclient.conf"
