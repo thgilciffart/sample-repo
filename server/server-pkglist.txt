@@ -1,5 +1,6 @@
 ddclient
 docker
+caddy
 cloudflared
 docker-compose
 docker-buildx
