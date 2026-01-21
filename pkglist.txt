@@ -19,3 +19,4 @@ bat
 7zip
 openssl
 zoxide
+helium-browser-bin

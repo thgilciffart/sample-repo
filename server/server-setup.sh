@@ -14,7 +14,7 @@ echo "
             ░░░░░░                                                                                       ░░░░░
 "
 echo "Installing AUR packages"
-yay -S --needed $(<server-pkglist.txt)
+yay -S --needed $(<server-pkg.txt)
 echo "Enabling linger for current user"
 sudo loginctl enable-linger $USER
 
@@ -31,10 +31,10 @@ echo "
 
 curl -L https://static.adguard.com/adguardhome/release/AdGuardHome_linux_386.tar.gz | tar -xz -C $HOME
 (
-    cd $HOME/AdGuardHome
-    sudo ./AdGuardHome -s install
-    sudo ufw allow 81
-    sudo ufw allow 53
+  cd $HOME/AdGuardHome
+  sudo ./AdGuardHome -s install
+  sudo ufw allow 81
+  sudo ufw allow 53
 )
 
 echo "
@@ -50,25 +50,26 @@ echo "
                                          ░░██████
                                           ░░░░░░
 "
-mkdir -p $HOME/Caddy /etc/caddy /var/log/caddy
+mkdir -p $HOME/Caddy
+sudo mkdir -p /etc/caddy /var/log/caddy
 (
-    cd $HOME/Caddy
-    xcaddy build \
-        --with github.com/mholt/caddy-dynamicdns \
-        --with github.com/caddy-dns/cloudflare \
-        --with github.com/jpillora/ipfilter-caddy
-    sudo mv caddy /usr/bin/
-    sudo groupadd --system caddy
-    sudo useradd --system \
-        --gid caddy \
-        --create-home \
-        --home-dir /var/lib/caddy \
-        --shell /usr/sbin/nologin \
-        --comment "Caddy web server" \
-        caddy
-    sudo setcap cap_net_bind_service+ep /usr/bin/caddy
-    sudo chown -R caddy:caddy /etc/caddy /var/log/caddy /var/lib/caddy
-    cat >Caddyfile <<caddy-config
+  cd $HOME/Caddy
+  xcaddy build \
+    --with github.com/mholt/caddy-dynamicdns \
+    --with github.com/caddy-dns/cloudflare \
+    --with github.com/jpillora/ipfilter-caddy
+  sudo mv caddy /usr/bin/
+  sudo groupadd --system caddy
+  sudo useradd --system \
+    --gid caddy \
+    --create-home \
+    --home-dir /var/lib/caddy \
+    --shell /usr/sbin/nologin \
+    --comment "Caddy web server" \
+    caddy
+  sudo setcap cap_net_bind_service+ep /usr/bin/caddy
+  sudo chown -R caddy:caddy /etc/caddy /var/log/caddy /var/lib/caddy $HOME/Caddy
+  cat >Caddyfile <<caddy-config
 {
 	dynamic_dns {
 		provider cloudflare TOKEN
@@ -122,9 +123,10 @@ domain.com {
 	}
 }
 caddy-config
-sudo cp Caddyfile /etc/caddy/Caddyfile
+  sudo cp Caddyfile /etc/caddy/Caddyfile
 )
 sudo curl -o /etc/systemd/system/caddy.service https://raw.githubusercontent.com/caddyserver/dist/refs/heads/master/init/caddy.service
+sudo sed -i "s|/etc/caddy/Caddyfile|$HOME/Caddy/Caddyfile|g" /etc/systemd/system/caddy.service
 sudo ufw allow 443,80/tcp
 sudo systemctl enable --now caddy.service
 
@@ -140,14 +142,14 @@ echo "
 "
 mkdir -p $HOME/fail2ban
 (
-    cd $HOME/fail2ban
-    cat >caddy-403.conf <<fail2ban-caddy
+  cd $HOME/fail2ban
+  cat >caddy-403.conf <<fail2ban-caddy
 [Definition]
 failregex = ^.*"client_ip":"<HOST>",.*?"status":403,.*$
 
 datepattern = LongEpoch
 fail2ban-caddy
-    cat >caddy.local <<fail2ban-jail-caddy
+  cat >caddy.local <<fail2ban-jail-caddy
 [caddy-403]
 enabled = true
 port = http,https
@@ -158,9 +160,9 @@ findtime = 10m
 bantime = 1d
 banaction = ufw
 fail2ban-jail-caddy
-sudo cp caddy-403.conf /etc/fail2ban/filter.d/caddy-403.conf
-sudo cp caddy.local /etc/fail2ban/jail.d/caddy.local
-sudo systemctl enable --now fail2ban
+  sudo cp caddy-403.conf /etc/fail2ban/filter.d/caddy-403.conf
+  sudo cp caddy.local /etc/fail2ban/jail.d/caddy.local
+  sudo systemctl enable --now fail2ban
 )
 
 echo "
@@ -237,7 +239,7 @@ echo "
                    ░░░░░       ░░░░░░   ░░░░░                                     ░░░░░░
 "
 mkdir -p $HOME/.config/copyparty
-mkdir -p /hdd/media /hdd/music /hdd/webdav /hdd/documents /hdd/downloads
+mkdir -p /hdd/keepass /hdd/music /hdd/webdav /hdd/documents /hdd/downloads
 echo "Copyparty setup"
 read -p "Enter the port to listen on (default 2000): " copyparty_port_input
 COPYPARTY_PORT=${copyparty_port_input:-2000}
@@ -289,8 +291,8 @@ cat >$HOME/.config/copyparty/copyparty.conf <<copyparty-config
         rwmd: user, admin
         a: admin
 
-[/media]
-    /hdd/media
+[/keepass]
+    /hdd/keepass
     accs:
         rwmd: user, admin
         a: admin
@@ -505,48 +507,3 @@ mkdir /hdd/immich
   sudo ufw allow $IMMICH_PORT
   sudo docker compose up -d
 )
-
-echo "
-                               █████
-                              ░░███
- █████████████   ████████   ███████
-░░███░░███░░███ ░░███░░███ ███░░███
- ░███ ░███ ░███  ░███ ░███░███ ░███
- ░███ ░███ ░███  ░███ ░███░███ ░███
- █████░███ █████ ░███████ ░░████████
-░░░░░ ░░░ ░░░░░  ░███░░░   ░░░░░░░░
-                 ░███
-                 █████
-                ░░░░░
-"
-mkdir -p $HOME/.config/mpd
-mkdir -p /hdd/music
-mkdir -p /hdd/mpd
-read -p "Enter the port to listen on (default 7000): " mpd_port_input
-MPD_PORT=${mpd_port_input:-7000}
-read -p "Enter the IP to listen on (default 0.0.0.0): " mpd_ip_input
-MPD_LISTENING_IP=${mpd_ip_input:-0.0.0.0}
-cat >$HOME/.config/mpd/mpd.conf <<mpd-config
-music_directory         "/hdd/music"
-playlist_directory      "/hdd/mpd/playlists"
-db_file                 "/hdd/mpd/tag_cache"
-pid_file                "/hdd/mpd/pid"
-state_file              "/hdd/mpd/state"
-sticker_file            "/hdd/mpd/sticker.sql"
-bind_to_address         "$MPD_LISTENING_IP"
-port                    "$MPD_PORT"
-bind_to_address         "/hdd/mpd/socket"
-
-audio_output {
-    type        "httpd"
-    name        "mpd server"
-    encoder     "lame"      # Needs 'lame' installed
-    bitrate     "128"
-    format      "44100:16:1"
-    always_on   "yes"       # prevent MPD from disconnecting on pause
-    tags        "yes"       # httpd supports sending tags to listening streams.
-}
-mpd-config
-sudo ufw allow $MPD_PORT
-sudo cp $HOME/.config/mpd/mpd.conf /etc/mpd.conf
-sudo systemctl enable --now mpd.service

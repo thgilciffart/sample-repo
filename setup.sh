@@ -1,38 +1,124 @@
 #!/bin/sh
-# Install yay package maanger on all systems
+
+echo "
+  ███                      █████              ████  ████   ███                                                        
+ ░░░                      ░░███              ░░███ ░░███  ░░░                                                         
+ ████  ████████    █████  ███████    ██████   ░███  ░███  ████  ████████    ███████    █████ ████  ██████   █████ ████
+░░███ ░░███░░███  ███░░  ░░░███░    ░░░░░███  ░███  ░███ ░░███ ░░███░░███  ███░░███   ░░███ ░███  ░░░░░███ ░░███ ░███ 
+ ░███  ░███ ░███ ░░█████   ░███      ███████  ░███  ░███  ░███  ░███ ░███ ░███ ░███    ░███ ░███   ███████  ░███ ░███ 
+ ░███  ░███ ░███  ░░░░███  ░███ ███ ███░░███  ░███  ░███  ░███  ░███ ░███ ░███ ░███    ░███ ░███  ███░░███  ░███ ░███ 
+ █████ ████ █████ ██████   ░░█████ ░░████████ █████ █████ █████ ████ █████░░███████    ░░███████ ░░████████ ░░███████ 
+░░░░░ ░░░░ ░░░░░ ░░░░░░     ░░░░░   ░░░░░░░░ ░░░░░ ░░░░░ ░░░░░ ░░░░ ░░░░░  ░░░░░███     ░░░░░███  ░░░░░░░░   ░░░░░███ 
+                                                                           ███ ░███     ███ ░███             ███ ░███ 
+                                                                          ░░██████     ░░██████             ░░██████  
+                                                                           ░░░░░░       ░░░░░░               ░░░░░░   
+"
 sudo pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay.git /tmp/yay
 (
-    cd /tmp/yay
-    makepkg -si
+  cd /tmp/yay
+  makepkg -si
 )
 
-# Install universal packages
-yay -S --needed $(< pkglist.txt)
+echo "
+  ███                      █████              ████  ████   ███                                                      █████                                         
+ ░░░                      ░░███              ░░███ ░░███  ░░░                                                      ░░███                                          
+ ████  ████████    █████  ███████    ██████   ░███  ░███  ████  ████████    ███████    ████████   ██████    ██████  ░███ █████  ██████    ███████  ██████   █████ 
+░░███ ░░███░░███  ███░░  ░░░███░    ░░░░░███  ░███  ░███ ░░███ ░░███░░███  ███░░███   ░░███░░███ ░░░░░███  ███░░███ ░███░░███  ░░░░░███  ███░░███ ███░░███ ███░░  
+ ░███  ░███ ░███ ░░█████   ░███      ███████  ░███  ░███  ░███  ░███ ░███ ░███ ░███    ░███ ░███  ███████ ░███ ░░░  ░██████░    ███████ ░███ ░███░███████ ░░█████ 
+ ░███  ░███ ░███  ░░░░███  ░███ ███ ███░░███  ░███  ░███  ░███  ░███ ░███ ░███ ░███    ░███ ░███ ███░░███ ░███  ███ ░███░░███  ███░░███ ░███ ░███░███░░░   ░░░░███
+ █████ ████ █████ ██████   ░░█████ ░░████████ █████ █████ █████ ████ █████░░███████    ░███████ ░░████████░░██████  ████ █████░░████████░░███████░░██████  ██████ 
+░░░░░ ░░░░ ░░░░░ ░░░░░░     ░░░░░   ░░░░░░░░ ░░░░░ ░░░░░ ░░░░░ ░░░░ ░░░░░  ░░░░░███    ░███░░░   ░░░░░░░░  ░░░░░░  ░░░░ ░░░░░  ░░░░░░░░  ░░░░░███ ░░░░░░  ░░░░░░  
+                                                                           ███ ░███    ░███                                              ███ ░███                 
+                                                                          ░░██████     █████                                            ░░██████                  
+                                                                           ░░░░░░     ░░░░░                                              ░░░░░░                   
+"
+echo "Installing AUR packages"
+yay -S --needed $(<pkg.txt)
+echo "Enabling linger for current user"
+sudo loginctl enable-linger $USER
 
-# Syncthing configuration
-# Load up default syncthing configuration
-
-syncthing -no-browser -no-restart >/dev/null 2>&1 </dev/null &
-sleep 10
-pkill syncthing
+echo "
+  █████████                                  █████    █████       ███                     
+ ███░░░░░███                                ░░███    ░░███       ░░░                      
+░███    ░░░  █████ ████ ████████    ██████  ███████   ░███████   ████  ████████    ███████
+░░█████████ ░░███ ░███ ░░███░░███  ███░░███░░░███░    ░███░░███ ░░███ ░░███░░███  ███░░███
+ ░░░░░░░░███ ░███ ░███  ░███ ░███ ░███ ░░░   ░███     ░███ ░███  ░███  ░███ ░███ ░███ ░███
+ ███    ░███ ░███ ░███  ░███ ░███ ░███  ███  ░███ ███ ░███ ░███  ░███  ░███ ░███ ░███ ░███
+░░█████████  ░░███████  ████ █████░░██████   ░░█████  ████ █████ █████ ████ █████░░███████
+ ░░░░░░░░░    ░░░░░███ ░░░░ ░░░░░  ░░░░░░     ░░░░░  ░░░░ ░░░░░ ░░░░░ ░░░░ ░░░░░  ░░░░░███
+              ███ ░███                                                            ███ ░███
+             ░░██████                                                            ░░██████ 
+              ░░░░░░                                                              ░░░░░░  
+"
+syncthing generate
 sed -i 's/127.0.0.1/0.0.0.0/' $HOME/.local/state/syncthing/config.xml
 sudo ufw allow syncthing
 sudo ufw allow syncthing-gui
+systemctl --user enable --now syncthing.service
 
-# Tailscale set up
-sudo systemctl enable tailscaled
-sudo systemctl start tailscaled
+echo "
+ ███████████            ███  ████                             ████          
+░█░░░███░░░█           ░░░  ░░███                            ░░███          
+░   ░███  ░   ██████   ████  ░███   █████   ██████   ██████   ░███   ██████ 
+    ░███     ░░░░░███ ░░███  ░███  ███░░   ███░░███ ░░░░░███  ░███  ███░░███
+    ░███      ███████  ░███  ░███ ░░█████ ░███ ░░░   ███████  ░███ ░███████ 
+    ░███     ███░░███  ░███  ░███  ░░░░███░███  ███ ███░░███  ░███ ░███░░░  
+    █████   ░░████████ █████ █████ ██████ ░░██████ ░░████████ █████░░██████ 
+   ░░░░░     ░░░░░░░░ ░░░░░ ░░░░░ ░░░░░░   ░░░░░░   ░░░░░░░░ ░░░░░  ░░░░░░  
+"
+sudo systemctl enable --now tailscaled
 sudo tailscale set --operator=$USER
 
-# Allow ssh through the firewall
+echo "
+  █████████   █████████  █████   █████
+ ███░░░░░███ ███░░░░░███░░███   ░░███ 
+░███    ░░░ ░███    ░░░  ░███    ░███ 
+░░█████████ ░░█████████  ░███████████ 
+ ░░░░░░░░███ ░░░░░░░░███ ░███░░░░░███ 
+ ███    ░███ ███    ░███ ░███    ░███ 
+░░█████████ ░░█████████  █████   █████
+ ░░░░░░░░░   ░░░░░░░░░  ░░░░░   ░░░░░ 
+"
 sudo ufw allow ssh
+cat /tmp/sshd_config <<ssh
+Include /etc/ssh/sshd_config.d/*.conf
+Port 22
 
-# Fish set up
-# Set fish as the default shell
+LoginGraceTime 60
+PermitRootLogin no
+StrictModes yes
+MaxAuthTries 6
+MaxSessions 10
+
+PubkeyAuthentication yes
+UsePAM yes
+AuthorizedKeysFile	.ssh/authorized_keys
+
+PasswordAuthentication no
+PermitEmptyPasswords no
+
+AllowUsers user
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+Subsystem	sftp	/usr/lib/ssh/sftp-server
+ssh
+sudo cp /tmp/sshd_config /etc/ssh/sshd_config
+sudo systemctl enable --now sshd.service
+
+echo "
+ ███████████  ███          █████     
+░░███░░░░░░█ ░░░          ░░███      
+ ░███   █ ░  ████   █████  ░███████  
+ ░███████   ░░███  ███░░   ░███░░███ 
+ ░███░░░█    ░███ ░░█████  ░███ ░███ 
+ ░███  ░     ░███  ░░░░███ ░███ ░███ 
+ █████       █████ ██████  ████ █████
+░░░░░       ░░░░░ ░░░░░░  ░░░░ ░░░░░ 
+"
 command -v fish | sudo tee -a /etc/shells
 chsh -s "$(command -v fish)"
-# Install fish plugins
 fish -c '
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
 fisher install jorgebucaran/nvm.fish
@@ -40,6 +126,16 @@ fisher install IlanCosman/tide@v6
 fisher install PatrickF1/fzf.fish
 nvm install latest
 '
-
-# Add .config to system
-# cp -r ./devices/.config $HOME
+echo "                                    ██████   ███          
+                                   ███░░███ ░░░           
+     ██████   ██████  ████████    ░███ ░░░  ████   ███████
+    ███░░███ ███░░███░░███░░███  ███████   ░░███  ███░░███
+   ░███ ░░░ ░███ ░███ ░███ ░███ ░░░███░     ░███ ░███ ░███
+   ░███  ███░███ ░███ ░███ ░███   ░███      ░███ ░███ ░███
+ ██░░██████ ░░██████  ████ █████  █████     █████░░███████
+░░  ░░░░░░   ░░░░░░  ░░░░ ░░░░░  ░░░░░     ░░░░░  ░░░░░███
+                                                  ███ ░███
+                                                 ░░██████ 
+                                                  ░░░░░░  
+"
+cp -r .config $HOME
