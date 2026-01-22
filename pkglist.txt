@@ -7,6 +7,7 @@ tailscale
 syncthing
 tealdeer
 neovim
+rclone
 fish
 fish-done
 openssh
@@ -14,8 +15,8 @@ fd
 fzf
 eza
 trash-cli
-mpd
 bat
+yazi
 7zip
 openssl
 zoxide

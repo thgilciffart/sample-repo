@@ -14,7 +14,7 @@ echo "
             ░░░░░░                                                                                       ░░░░░
 "
 echo "Installing AUR packages"
-yay -S --needed $(<server-pkg.txt)
+yay -S --needed $(<server-pkglist.txt)
 echo "Enabling linger for current user"
 sudo loginctl enable-linger $USER
 
