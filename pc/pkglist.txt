@@ -6,6 +6,7 @@ mpd
 mpc
 mpd-mpris
 mpdscribble
+keepassxc
 nomacs
 feh
 redshift
