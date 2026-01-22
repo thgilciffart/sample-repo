@@ -1,0 +1,5 @@
+acpi
+tlp
+tlp-pd
+tlp-rdw
+brightnessctl
