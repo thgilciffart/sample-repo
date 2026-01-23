@@ -1,4 +1,4 @@
-alias ls="eza --icons always -1"
+alias ls="eza --icons always -la"
 alias vim="nvim"
 
 set fish_greeting
