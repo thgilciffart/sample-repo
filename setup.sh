@@ -108,6 +108,20 @@ sudo cp /tmp/sshd_config /etc/ssh/sshd_config
 sudo systemctl enable --now sshd.service
 
 echo "
+   █████████  ██████████ ██████   ██████ █████ ██████   █████ █████      █████████  █████       █████
+  ███░░░░░███░░███░░░░░█░░██████ ██████ ░░███ ░░██████ ░░███ ░░███      ███░░░░░███░░███       ░░███ 
+ ███     ░░░  ░███  █ ░  ░███░█████░███  ░███  ░███░███ ░███  ░███     ███     ░░░  ░███        ░███ 
+░███          ░██████    ░███░░███ ░███  ░███  ░███░░███░███  ░███    ░███          ░███        ░███ 
+░███    █████ ░███░░█    ░███ ░░░  ░███  ░███  ░███ ░░██████  ░███    ░███          ░███        ░███ 
+░░███  ░░███  ░███ ░   █ ░███      ░███  ░███  ░███  ░░█████  ░███    ░░███     ███ ░███      █ ░███ 
+ ░░█████████  ██████████ █████     █████ █████ █████  ░░█████ █████    ░░█████████  ███████████ █████
+  ░░░░░░░░░  ░░░░░░░░░░ ░░░░░     ░░░░░ ░░░░░ ░░░░░    ░░░░░ ░░░░░      ░░░░░░░░░  ░░░░░░░░░░░ ░░░░░ 
+"
+npm install -g @google/gemini-cli
+gemini extensions install https://github.com/upstash/context7
+
+
+echo "
  ███████████  ███          █████
 ░░███░░░░░░█ ░░░          ░░███
  ░███   █ ░  ████   █████  ░███████
@@ -121,10 +135,10 @@ command -v fish | sudo tee -a /etc/shells
 chsh -s "$(command -v fish)"
 fish -c '
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
-fisher install jorgebucaran/nvm.fish
 fisher install IlanCosman/tide@v6
 fisher install PatrickF1/fzf.fish
 nvm install latest
+tide configure --auto --style=Lean --prompt_colors='True color' --show_time=No --lean_prompt_height='One line' --prompt_spacing=Compact --icons='Few icons' --transient=Yes
 '
 echo "                                    ██████   ███
                                    ███░░███ ░░░
