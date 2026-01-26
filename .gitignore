@@ -1,4 +1,6 @@
-/dwm*
+/dwm
+/dwmblocks
+build/
 *.o
 *.rej
 *.orig
