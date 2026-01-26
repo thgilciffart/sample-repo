@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Battery function for dwmblocks
+# Displays nothing if no battery is detected (desktop)
+
+battery_dir="/sys/class/power_supply/BAT1"
+
+# Check if battery exists
+[ ! -d "$battery_dir" ] && exit 0
+
+# Read battery info
+capacity=$(cat "$battery_dir/capacity" 2>/dev/null)
+status=$(cat "$battery_dir/status" 2>/dev/null)
+
+# Exit if we can't read battery info
+[ -z "$capacity" ] && exit 0
+
+# Choose icon based on status
+if [ "$status" = "Charging" ]; then
+    icon="󰂄"
+else
+    icon=""
+fi
+
+# Output battery status
+echo "bat: $capacity% $icon"
