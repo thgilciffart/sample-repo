@@ -6,4 +6,4 @@ If on desktop, run:
 in the ``dotfiles/base/`` folder.
 
 
-If on laptop, please check the [laptop instructions](base/laptop/README.md)
+If on laptop, please check the [laptop instructions](laptop/README.md)
