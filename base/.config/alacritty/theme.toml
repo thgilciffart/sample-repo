@@ -1,25 +1,26 @@
-# Zenburn
-
+# Theme from terminal.sexy base-16/Tomorrow
 [colors.primary]
-background='#000000'
-foreground='#ffffff'
+background = "0x1d1f21"
+foreground = "0xc5c8c6"
 
 [colors.normal]
-black='#1e2320'
-red='#705050'
-green='#60b48a'
-yellow='#dfaf8f'
-blue='#506070'
-magenta='#dc8cc3'
-cyan='#8cd0d3'
-white='#dcdccc'
+black = "0x1d1f21"
+red = "0xcc6666"
+green = "0xb5bd68"
+yellow = "0xf0c674"
+blue = "0x81a2be"
+magenta = "0xb294bb"
+cyan = "0x8abeb7"
+white = "0xc5c8c6"
 
 [colors.bright]
-black='#709080'
-red='#dca3a3'
-green='#c3bf9f'
-yellow='#f0dfaf'
-blue='#94bff3'
-magenta='#ec93d3'
-cyan='#93e0e3'
-white='#ffffff'
+black = "0x969896"
+red = "0xcc6666"
+green = "0xb5bd68"
+yellow = "0xf0c674"
+blue = "0x81a2be"
+magenta = "0xb294bb"
+cyan = "0x8abeb7"
+white = "0xffffff"
+
+

@@ -21,3 +21,4 @@ yazi
 openssl
 zoxide
 helium-browser-bin
+ffmpeg

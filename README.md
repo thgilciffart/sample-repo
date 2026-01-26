@@ -31,8 +31,9 @@ git clone https://github.com/thgilciffart/dotfiles.git
 cd dotfiles
 ./setup.sh
 ```
+This applies a "base" configuration for that is common between all devices.
 
-See other info: 
+See other device info: 
 
 [Desktop / Laptop setup](base/README.md)
 
