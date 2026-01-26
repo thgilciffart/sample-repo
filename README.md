@@ -34,6 +34,6 @@ cd dotfiles
 
 See other info: 
 
-[Desktop / Laptop setup](devices/computer/README.md)
+[Desktop / Laptop setup](base/README.md)
 
-[Server setup](devices/server/README.md)
+[Server setup](server/README.md)
